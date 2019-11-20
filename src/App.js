@@ -1,26 +1,12 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
 
-function App() {
+export default () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="min-h-screen bg-gray-200 text-gray-900">
+      <div className="mx-auto py-16" style={{ maxWidth: 900 }}>
+        <h1 className="text-6xl">React Tailwind Starter</h1>
+        <p className="mt-4">Lorem Ipsum</p>
+      </div>
     </div>
-  );
+  )
 }
-
-export default App;
