@@ -1,12 +1,42 @@
 import React from 'react'
+import { IdentityContextProvider } from 'react-netlify-identity-widget'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+
+import {
+  HomePage,
+  DashboardPage,
+  SettingsPage,
+} from './pages'
+
+
+const ErrorPage = () => {
+  return (
+    <>
+      <h1>Error</h1>
+      <p>Page not found</p>
+    </>
+  )
+}
+
+const DashboardRouter = ({ match }) => {
+  return (
+    <Switch>
+      <Route exact path={match.path} component={DashboardPage} />
+      <Route exact path={`${match.path}/settings`} component={SettingsPage} />
+    </Switch>
+  )
+}
 
 export default () => {
   return (
-    <div className="min-h-screen bg-gray-200 text-gray-900">
-      <div className="mx-auto py-16" style={{ maxWidth: 900 }}>
-        <h1 className="text-6xl">React Tailwind Starter</h1>
-        <p className="mt-4">Lorem Ipsum</p>
-      </div>
-    </div>
+    <IdentityContextProvider url={`https://washburneposse.netlify.com/`}>
+      <Router>
+        <Switch>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/dashboard" component={DashboardRouter} />
+          <Route component={ErrorPage} />
+        </Switch>
+      </Router>
+    </IdentityContextProvider>
   )
 }
