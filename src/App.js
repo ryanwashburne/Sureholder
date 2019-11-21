@@ -29,7 +29,7 @@ const DashboardRouter = ({ match }) => {
 
 export default () => {
   return (
-    <IdentityContextProvider url={`https://washburneposse.netlify.com/`}>
+    <IdentityContextProvider url={`https://sureholder.netlify.com/`}>
       <Router>
         <Switch>
           <Route exact path="/" component={HomePage} />
