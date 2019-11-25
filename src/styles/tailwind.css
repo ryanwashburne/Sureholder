@@ -23,7 +23,8 @@
 .btn {
   @apply uppercase;
   @apply bg-primary;
-  @apply p-3;
+  @apply py-2;
+  @apply px-3;
   @apply text-white;
   @apply rounded;
   @apply shadow-lg;
@@ -35,7 +36,8 @@
 .btn--outlined {
   @apply uppercase;
   @apply bg-transparent;
-  @apply p-3;
+  @apply py-2;
+  @apply px-3;
   @apply text-primary;
   @apply rounded;
   @apply border-2;
@@ -49,7 +51,8 @@
 .btn--secondary {
   @apply uppercase;
   @apply bg-secondary;
-  @apply p-3;
+  @apply py-2;
+  @apply px-3;
   @apply text-white;
   @apply rounded;
   @apply shadow-lg;
@@ -61,7 +64,8 @@
 .btn--outlined--secondary {
   @apply uppercase;
   @apply bg-transparent;
-  @apply p-3;
+  @apply py-2;
+  @apply px-3;
   @apply text-secondary;
   @apply rounded;
   @apply border-2;

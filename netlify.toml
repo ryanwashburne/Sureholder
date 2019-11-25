@@ -1,3 +1,8 @@
+[build]
+  command = "yarn build"
+  functions = "built-lambda"
+  publish = "build"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -8,6 +8,7 @@ import {
   SettingsPage,
 } from './pages'
 
+import Auth from './utils/auth'
 
 const ErrorPage = () => {
   return (
@@ -18,12 +19,11 @@ const ErrorPage = () => {
   )
 }
 
-const DashboardRouter = ({ match }) => {
+const PrivateRoute = (props) => {
   return (
-    <Switch>
-      <Route exact path={match.path} component={DashboardPage} />
-      <Route exact path={`${match.path}/settings`} component={SettingsPage} />
-    </Switch>
+    <Auth>
+      <Route {...props} />
+    </Auth>
   )
 }
 
@@ -32,8 +32,9 @@ export default () => {
     <IdentityContextProvider url={`https://sureholder.netlify.com`}>
       <Router>
         <Switch>
-          <Route exact path="/" component={HomePage} />
-          <Route path="/dashboard" component={DashboardRouter} />
+          <PrivateRoute exact path={`/`} component={DashboardPage} />
+          <PrivateRoute exact path={`/settings`} component={SettingsPage} />
+          <Route exact path={`/auth`} component={HomePage} />
           <Route component={ErrorPage} />
         </Switch>
       </Router>

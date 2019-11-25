@@ -1,13 +1,12 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
-import { useNetlifyIdentity } from 'react-netlify-identity'
+import { useIdentityContext } from 'react-netlify-identity'
 
 import {
   Dashboard,
 } from '../../components'
 
-export default withRouter(() => {
-  const identity = useNetlifyIdentity()
+export default () => {
+  const identity = useIdentityContext()
   const { updateUser } = identity
   return (
     <Dashboard>
@@ -22,4 +21,4 @@ export default withRouter(() => {
       >Erase User Data</button>
     </Dashboard>
   )
-})
+}

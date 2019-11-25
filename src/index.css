@@ -634,7 +634,10 @@ video {
 .btn {
   text-transform: uppercase;
   background-color: #3182ce;
-  padding: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   color: #fff;
   border-radius: 0.25rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -647,7 +650,10 @@ video {
 .btn--outlined {
   text-transform: uppercase;
   background-color: transparent;
-  padding: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   color: #3182ce;
   border-radius: 0.25rem;
   border-width: 2px;
@@ -662,7 +668,10 @@ video {
 .btn--secondary {
   text-transform: uppercase;
   background-color: #38a169;
-  padding: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   color: #fff;
   border-radius: 0.25rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -675,7 +684,10 @@ video {
 .btn--outlined--secondary {
   text-transform: uppercase;
   background-color: transparent;
-  padding: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   color: #38a169;
   border-radius: 0.25rem;
   border-width: 2px;

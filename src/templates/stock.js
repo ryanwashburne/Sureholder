@@ -1,21 +1,27 @@
 import React from 'react'
-import { useNetlifyIdentity } from 'react-netlify-identity'
+import { useIdentityContext } from 'react-netlify-identity'
 
-const apiKey = process.env.STOCK_API_KEY
- 
+import { updates, events } from '../data/spoof'
+
 export default ({ ticker }) => {
   const [loaded, changeLoaded] = React.useState(false)
   const [data, changeData] = React.useState()
-  const identity = useNetlifyIdentity()
+  const identity = useIdentityContext()
+  const { user } = identity
   React.useEffect(() => {
     async function loadData() {
-      const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${ticker}&apikey=${apiKey}`
       try {
-        const raw = await fetch(url)
+        const raw = await fetch(`/.netlify/functions/hello?company=${ticker}`, {
+          headers: {
+            'Authorization': `Bearer ${user.token.access_token}`,
+          },
+        })
         const data = await raw.json()
-        if (data['Global Quote']) changeData(data)
+        console.log(data)
+        changeData(data)
         changeLoaded(true)
       } catch(e) {
+        console.error(e)
         changeLoaded(true)
       }
     }
@@ -27,42 +33,85 @@ export default ({ ticker }) => {
   if (loaded && !data) {
   return <p>No company found for: <span className="font-bold">{ticker}</span></p>
   }
-  const { updateUser, user } = identity
+  const { updateUser } = identity
   const following = user.user_metadata.follow || []
   const index = following.indexOf(ticker)
   let already = false
   if (index > -1) {
     already = true
   }
+
+  async function handleClick() {
+    if (already) {
+      // unfollow
+      const index = following.indexOf(ticker)
+      if (index > -1) {
+        following.splice(index, 1)
+      }
+      await updateUser({ data: { follow: [...following] }})
+    } else {
+      // follow
+      await updateUser({ data: { follow: [...following, ticker] }})
+    }
+    window.location.reload()
+  }
+
   return (
-    <div>
-      <h1 className="text-4xl font-bold">{ticker}</h1>
-      <p
-        className="link my-2"
-        onClick={async () => {
-          if (already) {
-            // unfollow
-            const index = following.indexOf(ticker)
-            if (index > -1) {
-              following.splice(index, 1)
-            }
-            await updateUser({ data: { follow: [...following] }})
-            window.location.reload()
-          } else {
-            // follow
-            await updateUser({ data: { follow: [...following, ticker] }})
-            window.location.reload()
-          }
-        }}
-      >
-        {already ? 'Unfollow' : 'Follow'}
-      </p>
-      <p>Open: {data['Global Quote']['02. open']}</p>
-      <p>Previous Close: {data['Global Quote']['08. previous close']}</p>
-      <p>High: {data['Global Quote']['03. high']}</p>
-      <p>Low: {data['Global Quote']['04. low']}</p>
-      <p>Price: {data['Global Quote']['05. price']}</p>
-      <p>Change: {data['Global Quote']['09. change']}</p>
+    <div className="flex">
+      <div className="w-1/4">
+        <h1 className="text-4xl font-bold">{data['Name']}</h1>
+        <h3 className="text-2xl font-bold">{ticker}</h3>
+        <div className="border border-black rounded" style={{ width: 100, height: 100 }} />
+        <p
+          className="link my-2"
+          onClick={handleClick}
+        >
+          {already ? 'Unfollow' : 'Follow'}
+        </p>
+        <p>Open: ${parseFloat(data['Open'])}</p>
+        <p>High: ${parseFloat(data['High'])}</p>
+        <p>Low: ${parseFloat(data['Low'])}</p>
+        <p>Price: ${parseFloat(data['LastPrice'])}</p>
+        <p>Change: ${parseFloat(data['Change'])}</p>
+      </div>
+      <div className="w-3/4">
+        <UpdatesSection updates={updates} />
+        <CalendarSection events={events} />
+      </div>
+    </div>
+  )
+}
+
+const UpdatesSection = ({ updates = [] }) => {
+  return (
+    <div className="py-2">
+      <h2 className="text-xl font-bold mb-1">Recent Updates</h2>
+      {updates.map(({ title, date }, i) => {
+        return (
+          <div className="bg-white rounded p-3 mb-4 shadow" key={i}>
+            <h3>{title}</h3>
+            <p>{date}</p>
+          </div>
+        )
+      })}
+      <button className="btn">See More</button>
+    </div>
+  )
+}
+
+const CalendarSection = ({ events = [] }) => {
+  return (
+    <div className="py-2">
+      <h2 className="text-xl font-bold mb-1">Upcoming Calendar Events</h2>
+      {events.map(({ title, date }, i) => {
+        return (
+          <div className="bg-white rounded p-3 mb-4 shadow" key={i}>
+            <h3>{title}</h3>
+            <p>{date}</p>
+          </div>
+        )
+      })}
+      <button className="btn">See Full Calendar</button>
     </div>
   )
 }

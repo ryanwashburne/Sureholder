@@ -1,6 +1,5 @@
 import React from 'react'
 import { NavLink, Link, withRouter } from 'react-router-dom'
-import { useNetlifyIdentity } from 'react-netlify-identity'
 
 import {
   Input,
@@ -15,7 +14,7 @@ const RIGHT_DRAWER = 250
 
 const Pill = ({ to, icon, children }) => {
   return (
-    <NavLink exact to={`/dashboard${to}`} className="p-2 rounded flex items-center hover:text-white hover:bg-gray-700 mb-1" activeClassName="bg-gray-700 text-white">
+    <NavLink exact to={`/${to}`} className="p-2 rounded flex items-center hover:text-white hover:bg-gray-700 mb-1" activeClassName="bg-gray-700 text-white">
       {icon}
       <span className="ml-4">{children}</span>
     </NavLink>
@@ -23,33 +22,14 @@ const Pill = ({ to, icon, children }) => {
 }
 
 export default withRouter(({ history, ...props }) => {
-  const [u, changeUser] = React.useState()
   const [popper, changePopper] = React.useState()
   const [search, changeSearch] = React.useState('')
-  const identity = useNetlifyIdentity()
-  const { user } = identity
-  React.useEffect(() => {
-    function loadUser() {
-      if (!user) {
-        history.push('/')
-      }
-      changeUser(user)
-    }
-    loadUser()
-  }, [history, user])
-  if (!u) {
-    return (
-      <>
-        <p>Loading...</p>
-      </>
-    )
-  }
   return (
     <div className="flex min-h-screen">
       <div className="fixed h-full text-white bg-gray-900 flex" style={{ width: RIGHT_DRAWER }}>
         <div className="flex flex-col bg-gray-800 text-md text-gray-500" style={{ width: RIGHT_DRAWER }}>
           <div className="p-4 flex-1">
-            <form className="flex" onSubmit={(e) => { const s = search; e.preventDefault(); changeSearch(''); history.push(`/dashboard?stock=${s}`) }}>
+            <form className="flex" onSubmit={(e) => { const s = search; e.preventDefault(); changeSearch(''); history.push(`/?stock=${s}`) }}>
               <Input
                 name="search"
                 placeholder="Search..."
@@ -67,9 +47,9 @@ export default withRouter(({ history, ...props }) => {
           </div>
 
           <div className="p-4 flex items-center">
-            <span>{u.user_metadata.full_name}</span>
+            {/* <span>{u.user_metadata.full_name}</span> */}
             <div className="flex-1" />
-            <Link to="/dashboard/settings">
+            <Link to="/settings">
               <Manager>
                 <Reference>
                   {({ ref }) => (

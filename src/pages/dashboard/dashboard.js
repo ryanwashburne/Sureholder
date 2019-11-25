@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useNetlifyIdentity } from 'react-netlify-identity'
+import { useIdentityContext } from 'react-netlify-identity'
 
 import {
   Dashboard,
@@ -19,7 +19,7 @@ export default ({ location }) => {
       )
     } catch(_) {}
   }
-  const identity = useNetlifyIdentity()
+  const identity = useIdentityContext()
   const { updateUser, user } = identity
   const following = user.user_metadata.follow || []
   return (
@@ -32,7 +32,7 @@ export default ({ location }) => {
             return (
               <div key={i} className="bg-gray-200 rounded mb-2 p-2 border-gray-400 items-center border flex">
                 <div className="flex-1">
-                  <Link to={`/dashboard?stock=${company}`} className="link underline">{company}</Link>
+                  <Link to={`/?stock=${company}`} className="link underline">{company}</Link>
                 </div>
                 <div>
                   <span className="link" onClick={async () => {
