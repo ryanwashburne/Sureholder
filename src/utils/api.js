@@ -62,4 +62,21 @@ api.uploadFile = async ({ ticker, file, fileType }) => {
 //   }
 // }
 
+api.loadUpdates = async (ticker) => {
+  try {
+    return await authFetch(`/.netlify/functions/load-updates?ticker=${ticker}`)
+  } catch(e) {
+    throw e
+  }
+}
+
+api.loadUpdatesByTickers = async (tickers) => {
+  try {
+    const data = await authFetch(`/.netlify/functions/load-updates?ticker=${tickers.join(',')}`)
+    return await data.json()
+  } catch(e) {
+    throw e
+  }
+}
+
 export default api

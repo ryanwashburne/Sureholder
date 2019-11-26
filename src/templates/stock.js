@@ -135,8 +135,28 @@ const LogoSection = ({ admin, ticker, src }) => {
   )
 }
 
-const UpdatesSection = ({ admin, updates = [], ticker }) => {
+const UpdatesSection = ({ admin, ticker }) => {
   const [modal, changeModal] = React.useState(false)
+  const [loading, changeLoading] = React.useState(true)
+  const [updates, changeUpdates] = React.useState([])
+
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        let data = await api.loadUpdates(ticker)
+        data = await data.json()
+        if (data) changeUpdates(data)
+      } catch(e) {
+        console.error(e)
+      }
+      changeLoading(false)
+    }
+    loadData()
+  }, [])
+
+  if (loading) {
+    return <>Loading...</>
+  }
 
   async function onSubmit(values) {
     try {
@@ -153,10 +173,10 @@ const UpdatesSection = ({ admin, updates = [], ticker }) => {
   return (
     <div className="py-2">
       <h2 className="text-xl font-bold mb-1">Recent Updates</h2>
-      {updates.map(({ title, date }, i) => {
+      {updates.map(({ title, date, link }, i) => {
         return (
           <div className="bg-white rounded p-3 mb-4 shadow" key={i}>
-            <h3>{title}</h3>
+            <h3><a href={link} target="_blank">{title}</a></h3>
             <p>{date}</p>
           </div>
         )

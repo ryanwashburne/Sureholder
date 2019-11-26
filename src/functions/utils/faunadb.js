@@ -46,8 +46,31 @@ const createCompany = async (data) => {
   }
 }
 
+const updatesByTickers = async (tickers) => {
+  try {
+    return await client.query(
+      q.Map(
+        q.Paginate(
+          q.Union(
+            tickers.map((ticker) => (
+              q.Match(
+                q.Index('updates_by_ticker'),
+                ticker.toUpperCase()
+              )
+            )),
+          ),
+        ),
+        ref => q.Get(ref)
+      )
+    )
+  } catch(e) {
+    return null
+  }
+}
+
 export {
   companyByTicker,
   updateCompany,
   createCompany,
+  updatesByTickers,
 }

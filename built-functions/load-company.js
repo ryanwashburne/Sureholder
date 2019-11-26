@@ -8382,7 +8382,14 @@ const loadCompany = async event => {
     } = event;
     const {
       company
-    } = queryStringParameters;
+    } = queryStringParameters; // let companyData = await companyByTicker(company.toUpperCase())
+    // DO THIS LATER
+    // if (!companyData) {
+    //   createCompany({
+    //     ticker: company.toUpperCase(),
+    //   })
+    // }
+
     let [companyData, marketData] = await Promise.all([Object(_utils_faunadb__WEBPACK_IMPORTED_MODULE_1__["companyByTicker"])(company.toUpperCase()), Object(node_fetch__WEBPACK_IMPORTED_MODULE_2__["default"])(`${url}${company}`)]);
 
     if (!companyData) {
@@ -8418,7 +8425,7 @@ exports.handler = async (event, context) => Object(_lambda_helpers__WEBPACK_IMPO
 /*!**************************!*\
   !*** ./utils/faunadb.js ***!
   \**************************/
-/*! exports provided: companyByTicker, updateCompany, createCompany */
+/*! exports provided: companyByTicker, updateCompany, createCompany, updatesByTickers */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8426,6 +8433,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "companyByTicker", function() { return companyByTicker; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateCompany", function() { return updateCompany; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createCompany", function() { return createCompany; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updatesByTickers", function() { return updatesByTickers; });
 /* harmony import */ var faunadb__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! faunadb */ "../../node_modules/faunadb/index.js");
 /* harmony import */ var faunadb__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(faunadb__WEBPACK_IMPORTED_MODULE_0__);
 
@@ -8460,6 +8468,14 @@ const createCompany = async data => {
     }));
   } catch (e) {
     throw e;
+  }
+};
+
+const updatesByTickers = async tickers => {
+  try {
+    return await client.query(q.Map(q.Paginate(q.Union(tickers.map(ticker => q.Match(q.Index('updates_by_ticker'), ticker.toUpperCase())))), ref => q.Get(ref)));
+  } catch (e) {
+    return null;
   }
 };
 

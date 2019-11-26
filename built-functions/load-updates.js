@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./update-logo.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./load-updates.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -8358,34 +8358,38 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./update-logo.js":
-/*!************************!*\
-  !*** ./update-logo.js ***!
-  \************************/
-/*! exports provided: updateLogo */
+/***/ "./load-updates.js":
+/*!*************************!*\
+  !*** ./load-updates.js ***!
+  \*************************/
+/*! exports provided: loadCompany */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateLogo", function() { return updateLogo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadCompany", function() { return loadCompany; });
 /* harmony import */ var _lambda_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../lambda_helpers */ "../lambda_helpers/index.js");
 /* harmony import */ var _utils_faunadb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/faunadb */ "./utils/faunadb.js");
 
 
-const updateLogo = async event => {
+const loadCompany = async event => {
   try {
     const {
-      ticker,
-      type
-    } = JSON.parse(event.body);
-    const data = await Object(_utils_faunadb__WEBPACK_IMPORTED_MODULE_1__["companyByTicker"])(ticker.toUpperCase());
-    const logo = `https://sureholder.s3-us-west-2.amazonaws.com/${ticker.toUpperCase()}.${type}`;
-    await Object(_utils_faunadb__WEBPACK_IMPORTED_MODULE_1__["updateCompany"])(data.ref, {
-      logo
-    });
+      queryStringParameters
+    } = event;
+    const {
+      ticker
+    } = queryStringParameters;
+    const tickers = ticker.split(',');
+    const {
+      data
+    } = await Object(_utils_faunadb__WEBPACK_IMPORTED_MODULE_1__["updatesByTickers"])(tickers.map(ticker => ticker.toUpperCase()));
+    let flat = data.map(({
+      data
+    }) => data);
     return {
       statusCode: 200,
-      body: 'ok'
+      body: JSON.stringify(flat)
     };
   } catch (e) {
     console.error(e);
@@ -8396,7 +8400,7 @@ const updateLogo = async event => {
   }
 };
 
-exports.handler = async (event, context) => Object(_lambda_helpers__WEBPACK_IMPORTED_MODULE_0__["authorize"])(context.clientContext.user, async () => updateLogo(event));
+exports.handler = async (event, context) => Object(_lambda_helpers__WEBPACK_IMPORTED_MODULE_0__["authorize"])(context.clientContext.user, async () => loadCompany(event));
 
 /***/ }),
 

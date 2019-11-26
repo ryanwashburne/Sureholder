@@ -9,6 +9,14 @@ export const loadCompany = async (event) => {
     const { queryStringParameters } = event
     const { company } = queryStringParameters
 
+    // let companyData = await companyByTicker(company.toUpperCase())
+    // DO THIS LATER
+    // if (!companyData) {
+    //   createCompany({
+    //     ticker: company.toUpperCase(),
+    //   })
+    // }
+
     let [ companyData, marketData ] = await Promise.all([
       companyByTicker(company.toUpperCase()),
       fetch(`${url}${company}`),
