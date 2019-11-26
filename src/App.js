@@ -3,9 +3,10 @@ import { IdentityContextProvider } from 'react-netlify-identity-widget'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 import {
-  HomePage,
+  AuthPage,
   DashboardPage,
   SettingsPage,
+  AdminPage,
 } from './pages'
 
 import Auth from './utils/auth'
@@ -19,9 +20,9 @@ const ErrorPage = () => {
   )
 }
 
-const PrivateRoute = (props) => {
+const PrivateRoute = ({ admin, ...props }) => {
   return (
-    <Auth>
+    <Auth admin={admin}>
       <Route {...props} />
     </Auth>
   )
@@ -34,7 +35,8 @@ export default () => {
         <Switch>
           <PrivateRoute exact path={`/`} component={DashboardPage} />
           <PrivateRoute exact path={`/settings`} component={SettingsPage} />
-          <Route exact path={`/auth`} component={HomePage} />
+          <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
+          <Route exact path={`/auth`} component={AuthPage} />
           <Route component={ErrorPage} />
         </Switch>
       </Router>

@@ -1,5 +1,6 @@
 import React from 'react'
 import { NavLink, Link, withRouter } from 'react-router-dom'
+import { useIdentityContext } from 'react-netlify-identity'
 
 import {
   Input,
@@ -24,6 +25,10 @@ const Pill = ({ to, icon, children }) => {
 export default withRouter(({ history, ...props }) => {
   const [popper, changePopper] = React.useState()
   const [search, changeSearch] = React.useState('')
+  const identity = useIdentityContext()
+  const { user } = identity
+  const { roles } = user.app_metadata
+  const isAdmin = roles && roles.indexOf('admin') > -1
   return (
     <div className="flex min-h-screen">
       <div className="fixed h-full text-white bg-gray-900 flex" style={{ width: RIGHT_DRAWER }}>
@@ -44,10 +49,13 @@ export default withRouter(({ history, ...props }) => {
             <Pill to="" icon={<HomeIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
               Dashboard
             </Pill>
+            {isAdmin && <Pill to="admin" icon={<HomeIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
+              Admin
+            </Pill>}
           </div>
 
           <div className="p-4 flex items-center">
-            {/* <span>{u.user_metadata.full_name}</span> */}
+            <span>{user.user_metadata.full_name}</span>
             <div className="flex-1" />
             <Link to="/settings">
               <Manager>

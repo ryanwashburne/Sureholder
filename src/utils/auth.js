@@ -2,7 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { useIdentityContext } from 'react-netlify-identity'
 
-export default ({ children }) => {
+export default ({ admin, children }) => {
   const [loading, changeLoading] = React.useState(true)
   const identity = useIdentityContext()
   const { user } = identity
@@ -23,13 +23,18 @@ export default ({ children }) => {
       }
     }
     loadJwt()
-  }, [loading])
+  }, [loading, now, user])
 
   if (loading) {
     return null
   }
 
   if (!isLoggedIn || !user) { return <Redirect to="/auth" /> }
+
+  if (admin) {
+    const { roles } = user.app_metadata
+    if (!roles || roles.indexOf('admin') === -1) return <Redirect to="/" />
+  }
 
   return children
 }
