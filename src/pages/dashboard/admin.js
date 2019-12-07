@@ -7,7 +7,7 @@ import {
 export default () => {
   return (
     <Dashboard>
-      Admin
+      <p>Admin</p>
     </Dashboard>
   )
 }

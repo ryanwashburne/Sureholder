@@ -1,29 +1,28 @@
+import { GraphQLClient } from 'graphql-request'
+
 const api = {}
-const user = JSON.parse(localStorage.getItem('gotrue.user'))
+
+let token
+try {
+  token = JSON.parse(localStorage.getItem('gotrue.user')).token.access_token
+} catch(_) {}
+
+const uri = '/.netlify/functions/newql'
+const client = new GraphQLClient(uri, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+})
+export const request = (q, v) => client.request(q, v)
 
 const authFetch = (url, config = {}) => {
   return fetch(url, {
     ...config,
     headers: {
-      'Authorization': `Bearer ${user.token.access_token}`,
+      'Authorization': `Bearer ${token}`,
       ...config.headers,
     },
   })
-}
-
-api.newUpdate = async ({ ticker, title, date }) => {
-  try {
-    await authFetch('/.netlify/functions/new-update', {
-      method: 'POST',
-      body: JSON.stringify({
-        ticker,
-        title,
-        date,
-      }),
-    })
-  } catch(e) {
-    throw e
-  }
 }
 
 api.uploadFile = async ({ ticker, file, fileType }) => {
@@ -41,14 +40,7 @@ api.uploadFile = async ({ ticker, file, fileType }) => {
       method: 'PUT',
       body: file,
     })
-
-    await authFetch('/.netlify/functions/update-logo', {
-      method: 'POST',
-      body: JSON.stringify({
-        ticker,
-        type,
-      })
-    })
+    return `https://sureholder.s3-us-west-2.amazonaws.com/${ticker.toUpperCase()}.${type}`
   } catch(e) {
     throw e
   }
@@ -61,22 +53,5 @@ api.uploadFile = async ({ ticker, file, fileType }) => {
 //     throw e
 //   }
 // }
-
-api.loadUpdates = async (ticker) => {
-  try {
-    return await authFetch(`/.netlify/functions/load-updates?ticker=${ticker}`)
-  } catch(e) {
-    throw e
-  }
-}
-
-api.loadUpdatesByTickers = async (tickers) => {
-  try {
-    const data = await authFetch(`/.netlify/functions/load-updates?ticker=${tickers.join(',')}`)
-    return await data.json()
-  } catch(e) {
-    throw e
-  }
-}
 
 export default api

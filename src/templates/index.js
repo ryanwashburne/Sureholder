@@ -1,1 +1,1 @@
-export { default as StockTemplate } from './stock'
+export { default as StockTemplate } from './ticker'
