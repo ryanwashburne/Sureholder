@@ -27,7 +27,7 @@ export default ({ location }) => {
   const following = user.user_metadata.follow || []
 
   const { data, loading, error } = useQuery(QUERIES.ALL_UPDATES)
-
+  console.log(data, loading, error)
   if (error) return <>Error!</>
   if (loading) return <>Loading...</>
 
