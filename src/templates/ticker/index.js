@@ -30,11 +30,11 @@ export default ({ ticker }) => {
   return (
     <div className="flex">
       <div className="w-1/4">
-        <LogoSection admin={isAdmin} ticker={ticker} src={data.companyByTicker.logo} />
+        {/* <LogoSection admin={isAdmin} ticker={ticker} src={data.companyByTicker.logo} /> */}
         {/* <MarketSection market={data.companyByTicker.market} ticker={ticker} /> */}
       </div>
       <div className="w-3/4">
-        <UpdatesSection admin={isAdmin} ticker={ticker} />
+        {/* <UpdatesSection admin={isAdmin} ticker={ticker} /> */}
         {/* <CalendarSection admin={isAdmin} /> */}
       </div>
     </div>

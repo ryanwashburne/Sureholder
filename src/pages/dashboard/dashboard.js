@@ -26,10 +26,10 @@ export default ({ location }) => {
   const { updateUser, user } = identity
   const following = user.user_metadata.follow || []
 
-  const { data, loading, error } = useQuery(QUERIES.ALL_UPDATES)
-  console.log(data, loading, error)
-  if (error) return <>Error!</>
-  if (loading) return <>Loading...</>
+  // const { data, loading, error } = useQuery(QUERIES.ALL_UPDATES)
+  // console.log(data, loading, error)
+  // if (error) return <>Error!</>
+  // if (loading) return <>Loading...</>
 
   return (
     <Dashboard>
@@ -63,8 +63,8 @@ export default ({ location }) => {
         </div>
         <div className="w-1/2 pl-2">
           <div className="bg-white rounded p-4">
-            <h3>Feed:</h3>
-            {data.allUpdates.map(({ title, date, link, company }, i) => {
+            <h3 className="font-bold">Feed:</h3>
+            {/* {data.allUpdates.map(({ title, date, link, company }, i) => {
               return (
                 <div key={i} className="mb-4">
                   {link && <h3 className="link underline"><a href={link} target="_blank">{title}</a></h3>}
@@ -73,7 +73,8 @@ export default ({ location }) => {
                   <p><a href={`/?stock=${company.ticker}`} className="link">{company.ticker}</a></p>
                 </div>
               )
-            })}
+            })} */}
+            <p className="italic">No new updates.</p>
           </div>
         </div>
       </div>
