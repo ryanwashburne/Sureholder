@@ -19,6 +19,8 @@
     "encoding": "^0.1.12",
     "faunadb": "^2.9.4",
     "formik": "^2.0.4",
+    "google-spreadsheet": "^3.0.10",
+    "googleapis": "^48.0.0",
     "gotrue-js": "^0.9.25",
     "graphql": "^14.5.8",
     "graphql-request": "^1.8.2",

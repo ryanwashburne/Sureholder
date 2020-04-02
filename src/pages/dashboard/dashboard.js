@@ -6,39 +6,11 @@ import {
   Dashboard,
 } from '../../components'
 
-import { StockTemplate } from '../../templates'
-
-import { useQuery } from '@apollo/react-hooks'
-import * as QUERIES from '../../graphql/queries'
-
-export default ({ location }) => {
-  if (location.search) {
-    try {
-      const ticker = location.search.split('=')[1]
-      return (
-        <Dashboard>
-          <StockTemplate ticker={ticker.toUpperCase()} />
-        </Dashboard>
-      )
-    } catch(_) {}
-  }
+export default () => {
   const identity = useIdentityContext()
   const { updateUser, user } = identity
   const following = user.user_metadata.follow || []
-
-  // const { data, loading, error } = useQuery(QUERIES.COMPANY_BY_TICKER, {
-
-  // })
-  // console.log(data, loading, error)
-  // if (error) return <>Error!</>
-  // if (loading) return <>Loading...</>
-  const ticker = 'AAPL'
-  const variables = React.useMemo(() => ({ ticker }), [ticker])
-  const { data, loading, error } = useQuery(
-    QUERIES.COMPANY_BY_TICKER,
-    { variables }
-  )
-  console.log(data)
+  console.log(user, following)
 
   return (
     <Dashboard>

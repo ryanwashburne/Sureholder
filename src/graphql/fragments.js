@@ -2,7 +2,9 @@ import { gql } from 'apollo-boost'
 
 export const NEWS_FRAGMENT = gql`
   fragment newsFragment on News {
-    content
+    title
+    date
+    description
     url
   }
 `

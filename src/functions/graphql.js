@@ -1,16 +1,19 @@
 import authorize from './utils/authorize'
 import { ApolloServer, gql } from 'apollo-server-lambda'
 import fetch from 'node-fetch'
+import google from './utils/google'
 if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true') require('dotenv').config()
 
 const typeDefs = gql`
   type News {
-    content: String!
+    title: String!
+    date: String!
+    description: String
     url: String
   }
   type Company {
     ticker: String!
-    name: String!
+    name: String
     weburl: String
     open: Float!
     high: Float!
@@ -20,32 +23,31 @@ const typeDefs = gql`
     news: [News]
   }
   type Query {
-    companyByTicker(ticker: String): Company
+    companyByTicker(ticker: String!, limit: Int): Company
   }
 `
 
-const companyByTicker = async (_, { ticker }, { user }) => {
-  console.log('start', ticker, process.env.MY_FINNHUB_TOKEN)
-  const [res1, res2] = await Promise.all([
+const companyByTicker = async (_, { ticker, limit }) => {
+  const [res1, res2, news] = await Promise.all([
     fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
     fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
+    google(ticker.toUpperCase(), limit),
   ])
   const [data1, data2] = await Promise.all([
     res1.json(),
     res2.json(),
   ])
   const { name, weburl } = data2
-  console.log('end', data1, data2)
   return {
     ticker,
     name,
     weburl,
-    open: data1.o,
-    high: data1.h,
-    low: data1.l,
-    price: data1.c,
-    change: data1.c - data1.pc,
-    news: [{content: 'first', url: weburl}, {content: 'second'}, {content: 'third'}]
+    open: data1.o.toFixed(2),
+    high: data1.h.toFixed(2),
+    low: data1.l.toFixed(2),
+    price: data1.c.toFixed(2),
+    change: (((data1.c - data1.pc) / data1.pc) * 100).toFixed(2),
+    news,
   }
 }
 
