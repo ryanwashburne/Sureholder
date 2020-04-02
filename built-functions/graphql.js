@@ -67878,12 +67878,14 @@ const companyByTicker = async (_, {
 }, {
   user
 }) => {
+  console.log('start', ticker, process.env.MY_FINNHUB_TOKEN);
   const [res1, res2] = await Promise.all([Object(node_fetch__WEBPACK_IMPORTED_MODULE_2__["default"])(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`), Object(node_fetch__WEBPACK_IMPORTED_MODULE_2__["default"])(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`)]);
   const [data1, data2] = await Promise.all([res1.json(), res2.json()]);
   const {
     name,
     weburl
   } = data2;
+  console.log('end', data1, data2);
   return {
     ticker,
     name,
@@ -67928,8 +67930,11 @@ const server = new apollo_server_lambda__WEBPACK_IMPORTED_MODULE_1__["ApolloServ
       context
     }, rest);
   }
-});
-exports.handler = Object(_utils_authorize__WEBPACK_IMPORTED_MODULE_0__["default"])(server.createHandler());
+}); // const handler = server.createHandler()
+// console.log(handler)
+// exports.handler = authorize(handler)
+
+exports.handler = server.createHandler();
 
 /***/ }),
 
@@ -67943,7 +67948,7 @@ exports.handler = Object(_utils_authorize__WEBPACK_IMPORTED_MODULE_0__["default"
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = (child => {
-  return async (event, context, other) => {
+  return async (event, context, callback) => {
     if (!context || !context.clientContext || !context.clientContext.user) {
       return {
         statusCode: 400,
@@ -67951,7 +67956,7 @@ __webpack_require__.r(__webpack_exports__);
       };
     }
 
-    return child(event, context, other);
+    return child(event, context, callback);
   };
 });
 

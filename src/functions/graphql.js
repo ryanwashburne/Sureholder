@@ -1,7 +1,7 @@
 import authorize from './utils/authorize'
 import { ApolloServer, gql } from 'apollo-server-lambda'
 import fetch from 'node-fetch'
-if (process.env.NODE_ENV !== 'production') require('dotenv').config()
+if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true') require('dotenv').config()
 
 const typeDefs = gql`
   type News {
@@ -30,7 +30,6 @@ const companyByTicker = async (_, { ticker }, { user }) => {
     fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
     fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
   ])
-  console.log('mid', res1, res2)
   const [data1, data2] = await Promise.all([
     res1.json(),
     res2.json(),
@@ -71,4 +70,9 @@ const server = new ApolloServer({
   }),
 })
 
-exports.handler = authorize(server.createHandler())
+// const handler = server.createHandler()
+// console.log(handler)
+
+// exports.handler = authorize(handler)
+
+exports.handler = server.createHandler()
