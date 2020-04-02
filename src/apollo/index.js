@@ -9,7 +9,7 @@ function getToken() {
 }
 
 const client = new ApolloClient({
-  uri: '/.netlify/functions/newql',
+  uri: '/.netlify/functions/graphql',
   request: operation => {
     operation.setContext({
       headers: {

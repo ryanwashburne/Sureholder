@@ -14,12 +14,6 @@ const getSignedUrl = async (key, type) => {
     Key: key,
     ContentType: type,
     ACL: 'public-read', /* Note: change if files are NOT public */
-    /* Optionally add additional data
-      Metadata: {
-        foo: 'bar',
-        lol: 'hi'
-      }
-    */
   }
   try {
     return s3.getSignedUrl('putObject', s3Params)

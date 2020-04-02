@@ -4,10 +4,10 @@ import { useIdentityContext } from 'react-netlify-identity'
 import { useQuery } from '@apollo/react-hooks'
 import * as QUERIES from '../../graphql/queries'
 
-import CalendarSection from './calendar'
-import LogoSection from './logo'
-import UpdatesSection from './updates'
-import MarketSection from './market'
+// import CalendarSection from './calendar'
+// import LogoSection from './logo'
+// import UpdatesSection from './updates'
+// import MarketSection from './market'
 
 export default ({ ticker }) => {
   const identity = useIdentityContext()

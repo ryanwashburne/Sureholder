@@ -26,10 +26,19 @@ export default ({ location }) => {
   const { updateUser, user } = identity
   const following = user.user_metadata.follow || []
 
-  // const { data, loading, error } = useQuery(QUERIES.ALL_UPDATES)
+  // const { data, loading, error } = useQuery(QUERIES.COMPANY_BY_TICKER, {
+
+  // })
   // console.log(data, loading, error)
   // if (error) return <>Error!</>
   // if (loading) return <>Loading...</>
+  const ticker = 'AAPL'
+  const variables = React.useMemo(() => ({ ticker }), [ticker])
+  const { data, loading, error } = useQuery(
+    QUERIES.COMPANY_BY_TICKER,
+    { variables }
+  )
+  console.log(data)
 
   return (
     <Dashboard>
