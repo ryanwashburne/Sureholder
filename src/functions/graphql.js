@@ -25,6 +25,7 @@ const typeDefs = gql`
 `
 
 const companyByTicker = async (_, { ticker }, { user }) => {
+  console.log('start', ticker, process.env.MY_FINNHUB_TOKEN)
   const [res1, res2] = await Promise.all([
     fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
     fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
@@ -34,6 +35,7 @@ const companyByTicker = async (_, { ticker }, { user }) => {
     res2.json(),
   ])
   const { name, weburl } = data2
+  console.log('end')
   return {
     ticker,
     name,
