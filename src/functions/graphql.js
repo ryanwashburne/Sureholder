@@ -30,12 +30,13 @@ const companyByTicker = async (_, { ticker }, { user }) => {
     fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
     fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
   ])
+  console.log('mid', res1, res2)
   const [data1, data2] = await Promise.all([
     res1.json(),
     res2.json(),
   ])
   const { name, weburl } = data2
-  console.log('end')
+  console.log('end', data1, data2)
   return {
     ticker,
     name,
