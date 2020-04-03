@@ -1,4 +1,5 @@
 import React from 'react'
+import { useIdentityContext } from 'react-netlify-identity'
 
 import { useQuery } from '@apollo/react-hooks'
 import * as QUERIES from '../../graphql/queries'
@@ -12,6 +13,44 @@ import {
 } from '../../utils/functions'
 
 const Stock = ({ ticker }) => {
+  const identity = useIdentityContext()
+  const { updateUser, user } = identity
+  const following = user.user_metadata.follow || []
+
+  const [followingStock, changeFollowStock] = React.useState(following.indexOf(ticker) > -1)
+  const [disabled, changeDisabled] = React.useState(false)
+
+  async function handleFollow() {
+    changeDisabled(true)
+    try {
+      const temp = [...following]
+      const index = temp.indexOf(ticker)
+      if (index === -1) {
+        await updateUser({ data: { follow: [...following, ticker] }})
+        changeFollowStock(true)
+      }
+    } catch(e) {
+      console.error(e)
+    }
+    changeDisabled(false)
+  }
+
+  async function handleUnfollow() {
+    changeDisabled(true)
+    try {
+      const temp = [...following]
+      const index = temp.indexOf(ticker)
+      if (index > -1) {
+        temp.splice(index, 1)
+        await updateUser({ data: { follow: [...temp] }})
+        changeFollowStock(false)
+      }
+    } catch(e) {
+      console.error(e)
+    }
+    changeDisabled(false)
+  }
+
   const { data, loading, error } = useQuery(
     QUERIES.COMPANY_BY_TICKER,
     { variables: { ticker, limit: 5 } }
@@ -19,12 +58,20 @@ const Stock = ({ ticker }) => {
   if (error) return <>Error!</>
   if (loading) return <>Loading...</>
   const { companyByTicker } = data
+
   return (
     <div className="bg-white p-8 flex">
       <div className="w-3/4">
         <h1 className="text-4xl">{companyByTicker.ticker}</h1>
         {companyByTicker.name && <h4 className="text-xl">{companyByTicker.name}</h4>}
         {companyByTicker.weburl && <a href={companyByTicker.weburl} target="_blank" rel="noopener noreferrer" className="link">Website</a>}
+        <div>
+          {followingStock ? (
+            <button className="btn--outlined my-4" onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
+          ) : (
+            <button className="btn my-4" onClick={handleFollow} disabled={disabled}>Follow</button>
+          )}
+        </div>
         <div className="mt-8">
           <p>Open: ${toMoney(companyByTicker.open)}</p>
           <p>Price: ${toMoney(companyByTicker.price)}</p>

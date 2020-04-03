@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true')
 
 const auth = new google.auth.GoogleAuth({
   credentials: {
-    client_email: 'sureholder-admin@sureholder.iam.gserviceaccount.com',
+    client_email: process.env.MY_GOOGLE_EMAIL,
     private_key: process.env.MY_GOOGLE_KEY.replace(new RegExp('\\\\n', 'g'), '\n'),
   },
   scopes: ['https://www.googleapis.com/auth/drive'],

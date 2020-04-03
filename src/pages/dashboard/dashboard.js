@@ -10,7 +10,8 @@ export default () => {
   const identity = useIdentityContext()
   const { updateUser, user } = identity
   const following = user.user_metadata.follow || []
-  console.log(user, following)
+
+  const [tickers, changeTickers] = React.useState(following)
 
   return (
     <Dashboard>
@@ -18,26 +19,25 @@ export default () => {
         <div className="w-1/2 pr-2">
           <div className="p-4 bg-white rounded ">
             <h1 className="text-2xl font-bold mb-2">My Investments:</h1>
-            {following.map((company, i) => {
+            {tickers.map((company, i) => {
               return (
                 <div key={i} className="bg-gray-200 rounded mb-2 p-2 border-gray-400 items-center border flex">
                   <div className="flex-1">
-                    <Link to={`/?stock=${company}`} className="link underline">{company}</Link>
+                    <Link to={`/stock?ticker=${company}`} className="link underline">{company}</Link>
                   </div>
-                  <div>
-                    <span className="link" onClick={async () => {
-                      const index = following.indexOf(company);
+                    <button className="link" onClick={async () => {
+                      const temp = [...tickers]
+                      const index = temp.indexOf(company)
                       if (index > -1) {
-                        following.splice(index, 1);
+                        temp.splice(index, 1)
+                        await updateUser({ data: { follow: [...temp] }})
+                        changeTickers(temp)
                       }
-                      await updateUser({ data: { follow: [...following] }})
-                      window.location.reload()
-                    }}>Unfollow</span>
-                  </div>
+                    }}>Unfollow</button>
                 </div>
               )
             })}
-            {following.length === 0 && (
+            {tickers.length === 0 && (
               <h3 className="text-lg italic">Go follow some companies</h3>
             )}
           </div>
