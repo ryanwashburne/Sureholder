@@ -11,8 +11,7 @@ const typeDefs = gql`
     description: String
     url: String
   }
-  type Company {
-    ticker: String!
+  type Market {
     name: String
     weburl: String
     open: Float!
@@ -20,18 +19,28 @@ const typeDefs = gql`
     low: Float!
     price: Float!
     change: Float!
-    news: [News]
+  }
+  type Company {
+    ticker: String!
+    market: Market
+    news: [News!]
+  }
+  type NewsFeed {
+    ticker: String!
+    news: News!
   }
   type Query {
     companyByTicker(ticker: String!, limit: Int): Company
+    # companiesOnDashboard(tickers: [String!]!): [Company!]
+    newsFeed(tickers: [String!]): [NewsFeed!]
   }
 `
 
-const companyByTicker = async (_, { ticker, limit }) => {
-  const [res1, res2, news] = await Promise.all([
+// USES FINNHUB
+async function getMarket(ticker) {
+  const [res1, res2] = await Promise.all([
     fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
     fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
-    google(ticker.toUpperCase(), limit),
   ])
   const [data1, data2] = await Promise.all([
     res1.json(),
@@ -39,7 +48,6 @@ const companyByTicker = async (_, { ticker, limit }) => {
   ])
   const { name, weburl } = data2
   return {
-    ticker,
     name,
     weburl,
     open: data1.o.toFixed(2),
@@ -47,13 +55,56 @@ const companyByTicker = async (_, { ticker, limit }) => {
     low: data1.l.toFixed(2),
     price: data1.c.toFixed(2),
     change: (((data1.c - data1.pc) / data1.pc) * 100).toFixed(2),
+  }
+}
+
+async function getNews(ticker, limit = 5) {
+  return await google(ticker.toUpperCase(), limit)
+}
+
+const companyByTicker = async (_, { ticker, limit }) => {
+  const [market, news] = await Promise.all([
+    getMarket(ticker),
+    getNews(ticker, limit),
+  ])
+  return {
+    ticker: ticker.toUpperCase(),
+    market,
     news,
   }
+}
+
+// const companiesOnDashboard = async (_, { tickers }) => {
+//   const promises = tickers.map(ticker => getNews(ticker.toUpperCase()))
+//   const news = await Promise.all(promises)
+//   return tickers.map((ticker, i) => ({
+//     ticker: ticker.toUpperCase(),
+//     news: news[i],
+//   }))
+// }
+
+const newsFeed = async (_, { tickers }) => {
+  const promises = tickers.map(ticker => getNews(ticker.toUpperCase()))
+  const allNews = await Promise.all(promises)
+  const feed = []
+  allNews.forEach((news, i) => {
+    news.forEach(article => {
+      feed.push({
+        ticker: tickers[i].toUpperCase(),
+        news: {
+          ...article
+        }
+      })
+    })
+  })
+  return feed
 }
 
 const resolvers = {
   Query: {
     companyByTicker,
+    // companiesOnDashboard,
+    newsFeed,
   },
   // Mutation: {
   //   createCompany,

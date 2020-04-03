@@ -89,7 +89,7 @@ export default withRouter(({ history, ...props }) => {
 
       
 
-      <main className="h-min-screen bg-gray-200 w-full p-4 mx-auto">
+      <main className="h-min-screen bg-gray-200 p-4 mx-auto" style={{ width: `calc(100% - ${RIGHT_DRAWER}px)`}}>
         {props.children}
       </main>
     </div>

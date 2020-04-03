@@ -12,21 +12,21 @@ import {
   toMoney,
 } from '../../utils/functions'
 
-const Stock = ({ ticker }) => {
+const Stock = (props) => {
   const identity = useIdentityContext()
   const { updateUser, user } = identity
   const following = user.user_metadata.follow || []
 
-  const [followingStock, changeFollowStock] = React.useState(following.indexOf(ticker) > -1)
+  const [followingStock, changeFollowStock] = React.useState(following.indexOf(props.ticker) > -1)
   const [disabled, changeDisabled] = React.useState(false)
 
   async function handleFollow() {
     changeDisabled(true)
     try {
       const temp = [...following]
-      const index = temp.indexOf(ticker)
+      const index = temp.indexOf(props.ticker)
       if (index === -1) {
-        await updateUser({ data: { follow: [...following, ticker] }})
+        await updateUser({ data: { follow: [...following, props.ticker] }})
         changeFollowStock(true)
       }
     } catch(e) {
@@ -39,7 +39,7 @@ const Stock = ({ ticker }) => {
     changeDisabled(true)
     try {
       const temp = [...following]
-      const index = temp.indexOf(ticker)
+      const index = temp.indexOf(props.ticker)
       if (index > -1) {
         temp.splice(index, 1)
         await updateUser({ data: { follow: [...temp] }})
@@ -53,18 +53,19 @@ const Stock = ({ ticker }) => {
 
   const { data, loading, error } = useQuery(
     QUERIES.COMPANY_BY_TICKER,
-    { variables: { ticker, limit: 5 } }
+    { variables: { ticker: props.ticker, limit: 5 } }
   )
   if (error) return <>Error!</>
   if (loading) return <>Loading...</>
   const { companyByTicker } = data
+  const { ticker, market, news } = companyByTicker
 
   return (
     <div className="bg-white p-8 flex">
       <div className="w-3/4">
-        <h1 className="text-4xl">{companyByTicker.ticker}</h1>
-        {companyByTicker.name && <h4 className="text-xl">{companyByTicker.name}</h4>}
-        {companyByTicker.weburl && <a href={companyByTicker.weburl} target="_blank" rel="noopener noreferrer" className="link">Website</a>}
+        <h1 className="text-4xl">{ticker}</h1>
+        {market.name && <h4 className="text-xl">{market.name}</h4>}
+        {market.weburl && <a href={market.weburl} target="_blank" rel="noopener noreferrer" className="link">Website</a>}
         <div>
           {followingStock ? (
             <button className="btn--outlined my-4" onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
@@ -73,22 +74,22 @@ const Stock = ({ ticker }) => {
           )}
         </div>
         <div className="mt-8">
-          <p>Open: ${toMoney(companyByTicker.open)}</p>
-          <p>Price: ${toMoney(companyByTicker.price)}</p>
-          <p>High: ${toMoney(companyByTicker.high)}</p>
-          <p>Low: ${toMoney(companyByTicker.low)}</p>
-          <p>Change: {companyByTicker.change}%</p>
+          <p>Open: ${toMoney(market.open)}</p>
+          <p>Price: ${toMoney(market.price)}</p>
+          <p>High: ${toMoney(market.high)}</p>
+          <p>Low: ${toMoney(market.low)}</p>
+          <p>Change: {market.change}%</p>
         </div>
       </div>
       <div className="w-1/4">
         <h3 className="text-lg">Latest News:</h3>
         <ol>
-          {companyByTicker.news.map(({ title, url }, i) => {
+          {news.map(({ title, url }, i) => {
             return (
               <li key={i}>{url ? (<a href={url} target="_blank" rel="noopener noreferrer" className="link">{title}</a>) : title}</li>
             )
           })}
-          {companyByTicker.news.length === 0 && (
+          {news.length === 0 && (
             <p className="italic">No new updates</p>
           )}
         </ol>
