@@ -1,5 +1,6 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { google } = require('googleapis')
+const moment = require('moment')
 if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true') require('dotenv').config()
 
 const auth = new google.auth.GoogleAuth({
@@ -50,14 +51,15 @@ async function main(ticker, limit) {
       row.PressReleasesUrl.length > 0
     )
   })
-  return filteredRows.map(row => {
-    return {
-      title: row.PressReleasesTitle.trim(),
-      date: row.PressReleasesDateTime.trim(),
-      description: row.Description.trim(),
-      url: row.PressReleasesUrl.trim(),
-    }
-  })
+  return filteredRows.map(row => ({
+    category: 'earnings',
+    related: ticker,
+    source: 'googlesheets',
+    headline: row.PressReleasesTitle.trim(),
+    datetime: moment(new Date(row.PressReleasesDateTime.trim())).unix(),
+    summary: row.Description.trim(),
+    url: row.PressReleasesUrl.trim(),
+  }))
 }
 
 module.exports = main

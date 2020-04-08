@@ -43,8 +43,8 @@ const typeDefs = gql`
   type Company {
     ticker: String!
     market: Market
-    earnings: [Earnings]!
-    news: [News!]
+    earnings: [Earnings]
+    news: [News]
   }
   type NewsFeed {
     ticker: String!
@@ -100,18 +100,18 @@ async function getEarnings(ticker, end, limit = 5) {
   const date = moment().format('YYYY-MM-DD')
   const res = await fetch(`https://finnhub.io/api/v1/calendar/earnings?from=${date}&to=${end}&symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`)
   const { earningsCalendar } = await res.json()
-  return earningsCalendar.map(item => ({ earnings: {...item}, ticker})).splice(0, limit)
+  return earningsCalendar.splice(0, limit)
 }
 
 async function getNews(ticker, limit = 10) {
   const res = await fetch(`https://finnhub.io/api/v1/news/${ticker}?token=${process.env.MY_FINNHUB_TOKEN}`)
   const data = await res.json()
-  return data.map(item => ({news: {...item}, ticker})).splice(0, limit)
+  return data.splice(0, limit)
 }
 
-// async function getNews(ticker, limit = 5) {
-//   return await google(ticker.toUpperCase(), limit)
-// }
+async function getGoogleNews(ticker, limit = 5) {
+  return await google(ticker.toUpperCase(), limit)
+}
 
 const companyByTicker = async (_, { ticker, limit }) => {
   const [market, news, earnings] = await Promise.all([
@@ -128,15 +128,21 @@ const companyByTicker = async (_, { ticker, limit }) => {
 }
 
 const newsFeed = async (_, { tickers, limit = 10 }) => {
-  const promises = tickers.map(ticker => getNews(ticker.toUpperCase(), limit))
+  const promises = tickers.map(ticker => Promise.all([getNews(ticker.toUpperCase(), limit), getGoogleNews(ticker.toUpperCase(), limit)]))
   const allNews = await Promise.all(promises)
-  return allNews.flat().sort((a, b) => a.news.datetime < b.news.datetime ? 1 : -1).splice(0, limit)
+  const parsedData = allNews.map((tickerNews, i) => {
+    const apinews = tickerNews[0].map((item) => ({news: {...item}, ticker: tickers[i]}))
+    const googlenews = tickerNews[1].map((item) => ({news: {...item}, ticker: tickers[i]}))
+    return [...apinews, ...googlenews]
+  })
+  return parsedData.flat().sort((a, b) => a.news.datetime < b.news.datetime ? 1 : -1).splice(0, limit)
 }
 
 const earningsFeed = async (_, { tickers, limit = 5 }) => {
   const promises = tickers.map(ticker => getEarnings(ticker.toUpperCase(), moment().add(3, 'months').format('YYYY-MM-DD'), limit))
   const allEarnings = await Promise.all(promises)
-  return allEarnings.flat()
+  const parsedData = allEarnings.map((tickerEarnings, i) => tickerEarnings.map((item) => ({earnings: {...item}, ticker: tickers[i]})).splice(0, limit))
+  return parsedData.flat().sort((a, b) => a.news.datetime < b.news.datetime ? 1 : -1).splice(0, limit)
 }
 
 const resolvers = {

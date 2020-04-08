@@ -82,9 +82,9 @@ const Stock = (props) => {
       <div className="w-1/4">
         <h3 className="text-lg">Latest News:</h3>
         <ol>
-          {news.map(({ title, url }, i) => {
+          {news.map(({ headline, url }, i) => {
             return (
-              <li key={i}>{url ? (<a href={url} target="_blank" rel="noopener noreferrer" className="link">{title}</a>) : title}</li>
+              <li key={i} className="mb-4 text-xs">{url ? (<a href={url} target="_blank" rel="noopener noreferrer" className="link">{headline}</a>) : headline}</li>
             )
           })}
           {news.length === 0 && (
