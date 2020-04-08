@@ -1,43 +1,69 @@
 import authorize from './utils/authorize'
 import { ApolloServer, gql } from 'apollo-server-lambda'
 import fetch from 'node-fetch'
+import moment from 'moment'
 import google from './utils/google'
 if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true') require('dotenv').config()
 
 const typeDefs = gql`
-  type News {
+  type OLDNews {
     title: String!
     date: String!
     description: String
     url: String
   }
+  type News {
+    category: String
+    datetime: Int
+    headline: String
+    id: Int
+    image: String
+    related: String
+    source: String
+    summary: String
+    url: String
+  }
   type Market {
-    name: String
-    weburl: String
     open: Float!
     high: Float!
     low: Float!
     price: Float!
     change: Float!
   }
+  type Earnings {
+    date: String!
+    epsActual: Int!
+    epsEstimate: Int!
+    hour: String!
+    quarter: Int!
+    revenueActual: Int!
+    revenueEstimate: Int!
+    year: Int!
+  }
   type Company {
     ticker: String!
     market: Market
+    earnings: [Earnings]!
     news: [News!]
   }
   type NewsFeed {
     ticker: String!
     news: News!
   }
+  type EarningsFeed {
+    ticker: String!
+    earnings: Earnings!
+  }
   type Query {
     companyByTicker(ticker: String!, limit: Int): Company
-    # companiesOnDashboard(tickers: [String!]!): [Company!]
-    newsFeed(tickers: [String!]): [NewsFeed!]
+    newsFeed(tickers: [String!], limit: Int): [NewsFeed!]
+    earningsFeed(tickers: [String!], limit: Int): [EarningsFeed!]
   }
 `
 
 // USES FINNHUB
-async function getMarket(ticker) {
+// [now a premium feature]
+async function OLDgetMarket(ticker) {
   const [res1, res2] = await Promise.all([
     fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
     fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
@@ -57,47 +83,60 @@ async function getMarket(ticker) {
     change: (((data1.c - data1.pc) / data1.pc) * 100).toFixed(2),
   }
 }
-
-async function getNews(ticker, limit = 5) {
-  return await google(ticker.toUpperCase(), limit)
+async function getMarket(ticker) {
+  const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`)
+  const data = await res.json()
+  return {
+    open: data.o.toFixed(2),
+    high: data.h.toFixed(2),
+    low: data.l.toFixed(2),
+    price: data.c.toFixed(2),
+    change: (((data.c - data.pc) / data.pc) * 100).toFixed(2),
+  }
 }
 
+// USES FINNHUB
+async function getEarnings(ticker, end, limit = 5) {
+  const date = moment().format('YYYY-MM-DD')
+  const res = await fetch(`https://finnhub.io/api/v1/calendar/earnings?from=${date}&to=${end}&symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`)
+  const { earningsCalendar } = await res.json()
+  return earningsCalendar.map(item => ({ earnings: {...item}, ticker})).splice(0, limit)
+}
+
+async function getNews(ticker, limit = 10) {
+  const res = await fetch(`https://finnhub.io/api/v1/news/${ticker}?token=${process.env.MY_FINNHUB_TOKEN}`)
+  const data = await res.json()
+  return data.map(item => ({news: {...item}, ticker})).splice(0, limit)
+}
+
+// async function getNews(ticker, limit = 5) {
+//   return await google(ticker.toUpperCase(), limit)
+// }
+
 const companyByTicker = async (_, { ticker, limit }) => {
-  const [market, news] = await Promise.all([
+  const [market, news, earnings] = await Promise.all([
     getMarket(ticker),
     getNews(ticker, limit),
+    getEarnings(ticker, moment().add(3, 'months').format('YYYY-MM-DD')),
   ])
   return {
     ticker: ticker.toUpperCase(),
     market,
     news,
+    earnings,
   }
 }
 
-// const companiesOnDashboard = async (_, { tickers }) => {
-//   const promises = tickers.map(ticker => getNews(ticker.toUpperCase()))
-//   const news = await Promise.all(promises)
-//   return tickers.map((ticker, i) => ({
-//     ticker: ticker.toUpperCase(),
-//     news: news[i],
-//   }))
-// }
-
-const newsFeed = async (_, { tickers }) => {
-  const promises = tickers.map(ticker => getNews(ticker.toUpperCase()))
+const newsFeed = async (_, { tickers, limit = 10 }) => {
+  const promises = tickers.map(ticker => getNews(ticker.toUpperCase(), limit))
   const allNews = await Promise.all(promises)
-  const feed = []
-  allNews.forEach((news, i) => {
-    news.forEach(article => {
-      feed.push({
-        ticker: tickers[i].toUpperCase(),
-        news: {
-          ...article
-        }
-      })
-    })
-  })
-  return feed
+  return allNews.flat().sort((a, b) => a.news.datetime < b.news.datetime ? 1 : -1).splice(0, limit)
+}
+
+const earningsFeed = async (_, { tickers, limit = 5 }) => {
+  const promises = tickers.map(ticker => getEarnings(ticker.toUpperCase(), moment().add(3, 'months').format('YYYY-MM-DD'), limit))
+  const allEarnings = await Promise.all(promises)
+  return allEarnings.flat()
 }
 
 const resolvers = {
@@ -105,6 +144,7 @@ const resolvers = {
     companyByTicker,
     // companiesOnDashboard,
     newsFeed,
+    earningsFeed,
   },
   // Mutation: {
   //   createCompany,

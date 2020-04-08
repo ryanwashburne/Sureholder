@@ -64,8 +64,6 @@ const Stock = (props) => {
     <div className="bg-white p-8 flex">
       <div className="w-3/4">
         <h1 className="text-4xl">{ticker}</h1>
-        {market.name && <h4 className="text-xl">{market.name}</h4>}
-        {market.weburl && <a href={market.weburl} target="_blank" rel="noopener noreferrer" className="link">Website</a>}
         <div>
           {followingStock ? (
             <button className="btn--outlined my-4" onClick={handleUnfollow} disabled={disabled}>Un-follow</button>

@@ -28,3 +28,12 @@ export const NEWS_FEED = gql`
   }
   ${FRAGMENTS.NEWS_FEED_FRAGMENT}
 `
+
+export const EARNINGS_FEED = gql`
+  query ($tickers: [String!]) {
+    earningsFeed(tickers: $tickers) {
+      ...earningsFeedFragment
+    }
+  }
+  ${FRAGMENTS.EARNINGS_FEED_FRAGMENT}
+`
