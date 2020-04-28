@@ -23,13 +23,32 @@ export const NEWS_FRAGMENT = gql`
   }
 `
 
+export const PROFILE_FRAGMENT = gql`
+  fragment profileFragment on Profile {
+    website
+    description
+    ceo
+    sector
+    industry
+    companyName
+  }
+`
+
 export const MARKET_FRAGMENT = gql`
   fragment marketFragment on Market {
-    open
-    high
-    low
     price
+    changesPercentage
     change
+    dayLow
+    dayHigh
+    yearHigh
+    yearLow
+    marketCap
+    priceAvg50
+    priceAvg200
+    volume
+    avgVolume
+    exhange
   }
 `
 
@@ -78,10 +97,14 @@ export const COMPANY_FRAGMENT = gql`
     earnings {
       ...earningsFragment
     }
+    profile {
+      ...profileFragment
+    }
   }
   ${MARKET_FRAGMENT}
   ${NEWS_FRAGMENT}
   ${EARNINGS_FRAGMENT}
+  ${PROFILE_FRAGMENT}
 `
 
 export const UPDATE_FRAGMENT = gql`

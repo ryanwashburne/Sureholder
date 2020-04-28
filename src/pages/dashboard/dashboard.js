@@ -41,12 +41,12 @@ export default () => {
               const { headline, datetime, summary, url } = news
               return (
                 <div key={i} className="mb-6">
-                  <p><Link className="font-bold text-xs link" to={`/stock?ticker=${ticker}`}>{ticker}</Link></p>
+                  <p><Link className="font-bold text-xs link" to={`/s/${ticker}`}>{ticker}</Link></p>
                   {url ? (<a href={url} target="_blank" rel="noopener noreferrer" className="link">{headline}</a>) : headline}
                   <div>
                     <p className="truncate">{summary}</p>
                   </div>
-                  <p className="text-xs">{moment.unix(datetime).format('YYYY-MM-DD')}</p>
+                  <p className="text-xs">{moment.unix(datetime).format('MMM Do, YYYY')}</p>
                 </div>
               )
             })}
@@ -60,7 +60,7 @@ export default () => {
               return (
                 <div key={i} className="bg-gray-200 rounded mb-2 p-2 border-gray-400 items-center border flex">
                   <div className="flex-1">
-                    <Link to={`/stock?ticker=${company}`} className="link underline">{company}</Link>
+                    <Link to={`/s/${company}`} className="link underline">{company}</Link>
                   </div>
                     <button className="link" onClick={async () => {
                       const temp = [...tickers]
@@ -84,7 +84,7 @@ export default () => {
               const { date, revenueEstimate, revenueActual } = earnings
               return (
                 <div key={i} className="mb-6">
-                  <p><Link className="font-bold text-xs link" to={`/stock?ticker=${ticker}`}>{ticker}</Link></p>
+                  <p><Link className="font-bold text-xs link" to={`/s/${ticker}`}>{ticker}</Link></p>
                   <p>Estimate Rev: {revenueEstimate}</p>
                   <p>Actual Rev: {revenueActual} </p>
                   <p className="text-xs">{moment(date).format('YYYY-MM-DD')}</p>

@@ -1,17 +1,12 @@
-import authorize from './utils/authorize'
+// import authorize from './utils/authorize'
 import { ApolloServer, gql } from 'apollo-server-lambda'
 import fetch from 'node-fetch'
 import moment from 'moment'
 import google from './utils/google'
+import rss from './utils/rss'
 if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true') require('dotenv').config()
 
 const typeDefs = gql`
-  type OLDNews {
-    title: String!
-    date: String!
-    description: String
-    url: String
-  }
   type News {
     category: String
     datetime: Int
@@ -23,25 +18,47 @@ const typeDefs = gql`
     summary: String
     url: String
   }
+  type Profile {
+    website: String
+    description: String
+    ceo: String
+    sector: String
+    industry: String
+    companyName: String
+  }
   type Market {
-    open: Float!
-    high: Float!
-    low: Float!
-    price: Float!
-    change: Float!
+    # price: Float!
+    # dayHigh: Float!
+    # dayLow: Float!
+    # price: Float!
+    # change: Float!
+    price: Float
+    changesPercentage: Float
+    change: Float
+    dayLow: Float
+    dayHigh: Float
+    yearHigh: Float
+    yearLow: Float
+    marketCap: Float
+    priceAvg50: Float
+    priceAvg200: Float
+    volume: Int,
+    avgVolume: Int,
+    exhange: String
   }
   type Earnings {
     date: String!
-    epsActual: Int!
-    epsEstimate: Int!
+    epsActual: Float!
+    epsEstimate: Float!
     hour: String!
     quarter: Int!
-    revenueActual: Int!
-    revenueEstimate: Int!
+    revenueActual: Float!
+    revenueEstimate: Float!
     year: Int!
   }
   type Company {
     ticker: String!
+    profile: Profile!
     market: Market
     earnings: [Earnings]
     news: [News]
@@ -61,38 +78,50 @@ const typeDefs = gql`
   }
 `
 
+async function getProfile(ticker) {
+  const response = await fetch(`https://financialmodelingprep.com/api/v3/company/profile/${ticker}`)
+  const data = await response.json()
+  return data.profile
+}
+
 // USES FINNHUB
 // [now a premium feature]
-async function OLDgetMarket(ticker) {
-  const [res1, res2] = await Promise.all([
-    fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
-    fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
-  ])
-  const [data1, data2] = await Promise.all([
-    res1.json(),
-    res2.json(),
-  ])
-  const { name, weburl } = data2
-  return {
-    name,
-    weburl,
-    open: data1.o.toFixed(2),
-    high: data1.h.toFixed(2),
-    low: data1.l.toFixed(2),
-    price: data1.c.toFixed(2),
-    change: (((data1.c - data1.pc) / data1.pc) * 100).toFixed(2),
-  }
-}
-async function getMarket(ticker) {
-  const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`)
+// async function OLDgetMarket(ticker) {
+//   const [res1, res2] = await Promise.all([
+//     fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
+//     fetch(`https://finnhub.io/api/v1/stock/profile?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`),
+//   ])
+//   const [data1, data2] = await Promise.all([
+//     res1.json(),
+//     res2.json(),
+//   ])
+//   const { name, weburl } = data2
+//   return {
+//     name,
+//     weburl,
+//     open: data1.o.toFixed(2),
+//     high: data1.h.toFixed(2),
+//     low: data1.l.toFixed(2),
+//     price: data1.c.toFixed(2),
+//     change: (((data1.c - data1.pc) / data1.pc) * 100).toFixed(2),
+//   }
+// }
+// async function getMarket(ticker) {
+//   const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${process.env.MY_FINNHUB_TOKEN}`)
+//   const data = await res.json()
+//   return {
+//     open: data.o.toFixed(2),
+//     high: data.h.toFixed(2),
+//     low: data.l.toFixed(2),
+//     price: data.c.toFixed(2),
+//     change: (((data.c - data.pc) / data.pc) * 100).toFixed(2),
+//   }
+// }
+
+async function getMarket(tickers = []) {
+  const res = await fetch(`https://financialmodelingprep.com/api/v3/quote/${tickers.join()}`)
   const data = await res.json()
-  return {
-    open: data.o.toFixed(2),
-    high: data.h.toFixed(2),
-    low: data.l.toFixed(2),
-    price: data.c.toFixed(2),
-    change: (((data.c - data.pc) / data.pc) * 100).toFixed(2),
-  }
+  return data
 }
 
 // USES FINNHUB
@@ -114,16 +143,19 @@ async function getGoogleNews(ticker, limit = 5) {
 }
 
 const companyByTicker = async (_, { ticker, limit }) => {
-  const [market, news, earnings] = await Promise.all([
-    getMarket(ticker),
+  // await rss()
+  const [market, news, earnings, profile] = await Promise.all([
+    getMarket([ticker]),
     getNews(ticker, limit),
     getEarnings(ticker, moment().add(3, 'months').format('YYYY-MM-DD')),
+    getProfile(ticker),
   ])
   return {
     ticker: ticker.toUpperCase(),
-    market,
+    market: market[0],
     news,
     earnings,
+    profile,
   }
 }
 
@@ -148,14 +180,10 @@ const earningsFeed = async (_, { tickers, limit = 5 }) => {
 const resolvers = {
   Query: {
     companyByTicker,
-    // companiesOnDashboard,
     newsFeed,
     earningsFeed,
   },
   // Mutation: {
-  //   createCompany,
-  //   updateCompany,
-  //   createUpdate,
   // },
 }
 
@@ -168,10 +196,5 @@ const server = new ApolloServer({
     ...rest,
   }),
 })
-
-// const handler = server.createHandler()
-// console.log(handler)
-
-// exports.handler = authorize(handler)
 
 exports.handler = server.createHandler()

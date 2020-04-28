@@ -58,12 +58,16 @@ const Stock = (props) => {
   if (error) return <>Error!</>
   if (loading) return <>Loading...</>
   const { companyByTicker } = data
-  const { ticker, market, news } = companyByTicker
+  const { ticker, market, news, profile } = companyByTicker
+  const { companyName, description, website } = profile
 
   return (
     <div className="bg-white p-8 flex">
       <div className="w-3/4">
         <h1 className="text-4xl">{ticker}</h1>
+        <p>{companyName}</p>
+        <p className="italic text-xs my-4">{description}</p>
+        {website && <a href={website} target="_blank" rel="noopener noreferrer" className="link">Website</a>}
         <div>
           {followingStock ? (
             <button className="btn--outlined my-4" onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
@@ -72,10 +76,9 @@ const Stock = (props) => {
           )}
         </div>
         <div className="mt-8">
-          <p>Open: ${toMoney(market.open)}</p>
           <p>Price: ${toMoney(market.price)}</p>
-          <p>High: ${toMoney(market.high)}</p>
-          <p>Low: ${toMoney(market.low)}</p>
+          <p>High: ${toMoney(market.dayHigh)}</p>
+          <p>Low: ${toMoney(market.dayLow)}</p>
           <p>Change: {market.change}%</p>
         </div>
       </div>
@@ -96,18 +99,24 @@ const Stock = (props) => {
   )
 }
 
-export default ({ location }) => {
-  const search = location.search.substring(1).split('=')
-  if (search[0] !== 'ticker') {
+export default ({ match }) => {
+  if (!match?.params?.ticker) {
     return (
       <Dashboard>
         <p>Please provide a ticker.</p>
       </Dashboard>
     )
   }
+  if (!isNaN(match.params.articleId)) {
+    return (
+      <Dashboard>
+        <p>{match.params.articleId}</p>
+      </Dashboard>
+    )
+  }
   return (
     <Dashboard>
-      <Stock ticker={search[1].toUpperCase()} />
+      <Stock ticker={match.params.ticker.toUpperCase()} />
     </Dashboard>
   )
 }

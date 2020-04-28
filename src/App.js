@@ -34,12 +34,13 @@ const PrivateRoute = ({ admin, ...props }) => {
 
 export default () => {
   return (
-    <IdentityContextProvider url={`https://sureholder.netlify.com`}>
+    <IdentityContextProvider url={`https://sureholder.netlify.app`}>
       <ApolloProvider client={client}>
         <Router>
           <Switch>
             <PrivateRoute exact path={`/`} component={DashboardPage} />
-            <PrivateRoute exact path={`/stock`} component={StockPage} />
+            <PrivateRoute exact path={`/s/:ticker`} component={StockPage} />
+            <PrivateRoute exact path={`/s/:ticker/:articleId`} component={StockPage} />
             <PrivateRoute exact path={`/settings`} component={SettingsPage} />
             <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
             <Route exact path={`/auth`} component={AuthPage} />

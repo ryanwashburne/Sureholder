@@ -16,7 +16,6 @@ export default withRouter(({ history }) => {
         showDialog={modal}
         onCloseDialog={() => changeModal(false)}
         onLogin={() => history.push('/')}
-        onSignup={(user) => console.log('welcome ', user.user_metadata)}
         onLogout={() => history.push('/')}
       />
     </div>

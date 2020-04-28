@@ -34,7 +34,7 @@ export default withRouter(({ history, ...props }) => {
       <div className="fixed h-full text-white bg-gray-900 flex" style={{ width: RIGHT_DRAWER }}>
         <div className="flex flex-col bg-gray-800 text-md text-gray-500" style={{ width: RIGHT_DRAWER }}>
           <div className="p-4 flex-1">
-            <form className="flex" onSubmit={(e) => { const s = search; e.preventDefault(); changeSearch(''); history.push(`/stock?ticker=${s}`); window.location.reload() }}>
+            <form className="flex" onSubmit={(e) => { const s = search; e.preventDefault(); changeSearch(''); history.push(`/s/${s}`); window.location.reload() }}>
               <Input
                 name="search"
                 placeholder="Search..."
