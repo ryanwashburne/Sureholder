@@ -4,8 +4,8 @@ const Error = () => {
   return (
     <div className="h-screen w-full flex justify-center flex-col items-center">
       <h1 className="text-4xl font-bold">ERROR</h1>
-      <p>Something went wrong. Most likely had too many requests to the third-party API</p>
-      <p>Please wait a few seconds and reload the page to try again</p>
+      <p>Something went wrong. Please wait a few seconds and reload the page to try again</p>
+      <p>If the issue is not resolved, please contact: <a href="mailto:sureholder@gmail.com">sureholder@gmail.com</a></p>
     </div>
   )
 }

@@ -1,11 +1,9 @@
-// import authorize from './utils/authorize'
 import { ApolloServer, gql } from 'apollo-server-lambda'
 import fetch from 'node-fetch'
-import moment from 'moment'
-import google from './utils/google'
-import { getId } from './utils/rss'
 import { quote } from 'yahoo-finance/lib'
-if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true') require('dotenv').config()
+import { IEX } from './utils/external'
+
+/* Types Decleration */
 
 const typeDefs = gql`
   type News {
@@ -78,6 +76,8 @@ const typeDefs = gql`
   }
 `
 
+/* Data Retrieval Functions */
+
 async function getProfile(ticker) {
   const response = await quote(ticker, ['summaryProfile', 'price'])
   const { website, longBusinessSummary, sector, industry } = response.summaryProfile
@@ -119,7 +119,7 @@ async function getEarnings(ticker) {
 }
 
 async function getNews(ticker, limit) {
-  const result = await fetch(`https://cloud.iexapis.com/stable/stock/${ticker}/news/last/${limit}?token=${process.env.MY_IEX_TOKEN}`)
+  const result = await fetch(IEX(`/${ticker}/news/last/${limit}`))
   const data = await result.json()
   return data.map((news) => ({
     ...news,
@@ -127,9 +127,7 @@ async function getNews(ticker, limit) {
   }))
 }
 
-// async function getGoogleNews(ticker, limit) {
-//   return await google(ticker.toUpperCase(), limit)
-// }
+/* Resolver Functions */
 
 const companyByTicker = async (_, { ticker, limit = 5}) => {
   const [market, news, earnings, profile] = await Promise.all([
@@ -168,6 +166,8 @@ const earningsFeed = async (_, { tickers }) => {
   return allEarnings.map((earnings, i) => ({ ticker: tickers[i], earnings }))
 }
 
+/* GraphQL Configuration */
+
 const resolvers = {
   Query: {
     companyByTicker,
@@ -177,7 +177,6 @@ const resolvers = {
   // Mutation: {
   // },
 }
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,

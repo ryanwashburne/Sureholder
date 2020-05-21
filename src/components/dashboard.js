@@ -7,6 +7,7 @@ import {
 } from './'
 
 import { ReactComponent as HomeIcon } from '../images/icons/home.svg'
+import { ReactComponent as UserIcon } from '../images/icons/user.svg'
 import { ReactComponent as SettingsIcon } from '../images/icons/cog.svg'
 
 import { Manager, Reference, Popper } from 'react-popper'
@@ -41,7 +42,7 @@ export default withRouter(({ history, ...props }) => {
                 onChange={(e) => changeSearch(e.target.value)}
                 value={search}
               />
-              <button className="bg-gray-600 p-2 rounded text-gray-100">Go</button>
+              <button className="ml-2 bg-gray-600 p-2 rounded text-gray-100">Go</button>
             </form>
 
             <div className="my-8" />
@@ -49,7 +50,7 @@ export default withRouter(({ history, ...props }) => {
             <Pill to="" icon={<HomeIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
               Dashboard
             </Pill>
-            {isAdmin && <Pill to="admin" icon={<HomeIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
+            {isAdmin && <Pill to="admin" icon={<UserIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
               Admin
             </Pill>}
           </div>
