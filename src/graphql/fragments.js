@@ -1,20 +1,18 @@
 import { gql } from 'apollo-boost'
 
-export const OLD_NEWS_FRAGMENT = gql`
-  fragment newsFragment on News {
-    title
-    date
-    description
-    url
-  }
-`
+// export const OLD_NEWS_FRAGMENT = gql`
+//   fragment newsFragment on News {
+//     title
+//     date
+//     description
+//     url
+//   }
+// `
 
 export const NEWS_FRAGMENT = gql`
   fragment newsFragment on News {
-    category
     datetime
     headline
-    id
     image
     related
     source
@@ -27,7 +25,6 @@ export const PROFILE_FRAGMENT = gql`
   fragment profileFragment on Profile {
     website
     description
-    ceo
     sector
     industry
     companyName
@@ -41,27 +38,36 @@ export const MARKET_FRAGMENT = gql`
     change
     dayLow
     dayHigh
-    yearHigh
-    yearLow
     marketCap
-    priceAvg50
-    priceAvg200
     volume
-    avgVolume
-    exhange
   }
 `
 
 export const EARNINGS_FRAGMENT = gql`
   fragment earningsFragment on Earnings {
-    date
-    epsActual
-    epsEstimate
-    hour
-    quarter
-    revenueActual
-    revenueEstimate
-    year
+    earningsChart {
+      quarterly {
+        date
+        actual
+        estimate
+      }
+      currentQuarterEstimate
+      currentQuarterEstimateDate
+      currentQuarterEstimateYear
+      earningsDate
+    }
+    financialsChart {
+      yearly {
+        date
+        revenue
+        earnings
+      }
+      quarterly {
+        date
+        revenue
+        earnings
+      }
+    }
   }
 `
 

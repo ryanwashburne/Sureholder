@@ -21,8 +21,8 @@ export const COMPANIES_ON_DASHBOARD = gql`
 `
 
 export const NEWS_FEED = gql`
-  query ($tickers: [String!]) {
-    newsFeed(tickers: $tickers) {
+  query ($tickers: [String!], $limit: Int) {
+    newsFeed(tickers: $tickers, limit: $limit) {
       ...newsFeedFragment
     }
   }

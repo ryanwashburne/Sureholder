@@ -1,11 +1,13 @@
 import React from 'react'
 import { useIdentityContext } from 'react-netlify-identity'
+import moment from 'moment'
 
 import { useQuery } from '@apollo/react-hooks'
 import * as QUERIES from '../../graphql/queries'
 
 import {
   Dashboard,
+  Query,
 } from '../../components'
 
 import {
@@ -53,14 +55,13 @@ const Stock = (props) => {
 
   const { data, loading, error } = useQuery(
     QUERIES.COMPANY_BY_TICKER,
-    { variables: { ticker: props.ticker, limit: 5 } }
+    { variables: { ticker: props.ticker, limit: 3 } }
   )
-  if (error) return <>Error!</>
-  if (loading) return <>Loading...</>
+  if (error) return <Query.Error />
+  if (loading) return <Query.Loading />
   const { companyByTicker } = data
   const { ticker, market, news, profile } = companyByTicker
   const { companyName, description, website } = profile
-
   return (
     <div className="bg-white p-8 flex">
       <div className="w-3/4">
@@ -82,12 +83,15 @@ const Stock = (props) => {
           <p>Change: {market.change}%</p>
         </div>
       </div>
-      <div className="w-1/4">
+      <div className="w-1/4 ml-2">
         <h3 className="text-lg">Latest News:</h3>
         <ol>
-          {news.map(({ headline, url }, i) => {
+          {news.map(({ headline, datetime, url }, i) => {
             return (
-              <li key={i} className="mb-4 text-xs">{url ? (<a href={url} target="_blank" rel="noopener noreferrer" className="link">{headline}</a>) : headline}</li>
+              <li key={i} className="mb-4 text-xs">
+                <p><a href={url} target="_blank" rel="noopener noreferrer" className="link">{headline}</a></p>
+                <p className="text-xs">{moment(datetime).format('MMM Do, YYYY')}</p>
+              </li>
             )
           })}
           {news.length === 0 && (

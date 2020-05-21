@@ -64,4 +64,6 @@ async function main(ticker = 'AAPL') {
   return null
 }
 
-module.exports = main
+module.exports = {
+  getId,
+}

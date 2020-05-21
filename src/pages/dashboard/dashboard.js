@@ -8,7 +8,7 @@ import * as QUERIES from '../../graphql/queries'
 
 import {
   Dashboard,
-  Error,
+  Query,
 } from '../../components'
 
 export default () => {
@@ -26,11 +26,11 @@ export default () => {
     QUERIES.EARNINGS_FEED,
     { variables: { tickers } }
   )
-  if (error || errorE) return <Error />
-  if (loading || loadingE) return <>Loading...</>
+  if (error || errorE) return <Query.Error />
+  if (loading || loadingE) return <Query.Loading />
   const { newsFeed } = data
   const { earningsFeed } = dataE
-
+  console.log(earningsFeed)
   return (
     <Dashboard>
       <div className="flex">
@@ -46,7 +46,7 @@ export default () => {
                   <div>
                     <p className="truncate">{summary}</p>
                   </div>
-                  <p className="text-xs">{moment.unix(datetime).format('MMM Do, YYYY')}</p>
+                  <p className="text-xs">{moment(datetime).format('MMM Do, YYYY')}</p>
                 </div>
               )
             })}
@@ -81,13 +81,12 @@ export default () => {
           <div className="p-4 bg-white rounded">
             <h1 className="text-2xl font-bold mb-2">Upcoming Earnings:</h1>
             {earningsFeed.map(({ ticker, earnings }, i) => {
-              const { date, revenueEstimate, revenueActual } = earnings
+              const { currentQuarterEstimate, currentQuarterEstimateDate, currentQuarterEstimateYear, earningsDate } = earnings.earningsChart
               return (
                 <div key={i} className="mb-6">
-                  <p><Link className="font-bold text-xs link" to={`/s/${ticker}`}>{ticker}</Link></p>
-                  <p>Estimate Rev: {revenueEstimate}</p>
-                  <p>Actual Rev: {revenueActual} </p>
-                  <p className="text-xs">{moment(date).format('YYYY-MM-DD')}</p>
+                  <p className="text-xs"><Link className="font-bold link" to={`/s/${ticker}`}>{ticker}</Link></p>
+                  <p className="text-xs">{currentQuarterEstimateDate}{currentQuarterEstimateYear} / Estimate Rev: {currentQuarterEstimate}</p>
+                  <p className="text-xs">{moment.unix(earningsDate[0]).format('MMM Do, YYYY')}-{moment.unix(earningsDate[1]).format('MMM Do, YYYY')}</p>
                 </div>
               )
             })}
