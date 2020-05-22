@@ -2,6 +2,10 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { useIdentityContext } from 'react-netlify-identity'
 
+import {
+  isAdmin,
+} from './'
+
 export default ({ admin, children }) => {
   const [loading, changeLoading] = React.useState(true)
   const identity = useIdentityContext()
@@ -31,9 +35,8 @@ export default ({ admin, children }) => {
 
   if (!isLoggedIn || !user) { return <Redirect to="/auth" /> }
 
-  if (admin) {
-    const { roles } = user.app_metadata
-    if (!roles || roles.indexOf('admin') === -1) return <Redirect to="/" />
+  if (admin && !isAdmin(user)) {
+    return <Redirect to="/" />
   }
 
   return children

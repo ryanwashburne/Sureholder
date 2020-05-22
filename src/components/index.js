@@ -1,6 +1,7 @@
 export { default as Container } from './container'
 export { default as Button } from './button'
 export { default as Input } from './input'
-export { default as Dashboard } from './dashboard'
+export { default as Frame } from './frame'
 export { default as Avatar } from './avatar'
 export { default as Query } from './query'
+export { default as Link } from './link'

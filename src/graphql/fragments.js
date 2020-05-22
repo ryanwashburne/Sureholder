@@ -1,14 +1,5 @@
 import { gql } from 'apollo-boost'
 
-// export const OLD_NEWS_FRAGMENT = gql`
-//   fragment newsFragment on News {
-//     title
-//     date
-//     description
-//     url
-//   }
-// `
-
 export const NEWS_FRAGMENT = gql`
   fragment newsFragment on News {
     datetime
@@ -71,6 +62,15 @@ export const EARNINGS_FRAGMENT = gql`
   }
 `
 
+export const FILINGS_FRAGMENT = gql`
+  fragment filingsFragment on FilingsType {
+    title
+    link
+    pubDate
+    content    
+  }
+`
+
 export const NEWS_FEED_FRAGMENT = gql`
   fragment newsFeedFragment on NewsFeed {
     ticker
@@ -106,11 +106,15 @@ export const COMPANY_FRAGMENT = gql`
     profile {
       ...profileFragment
     }
+    filings {
+      ...filingsFragment
+    }
   }
   ${MARKET_FRAGMENT}
   ${NEWS_FRAGMENT}
   ${EARNINGS_FRAGMENT}
   ${PROFILE_FRAGMENT}
+  ${FILINGS_FRAGMENT}
 `
 
 export const UPDATE_FRAGMENT = gql`

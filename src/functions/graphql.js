@@ -1,7 +1,9 @@
 import { ApolloServer, gql } from 'apollo-server-lambda'
 import fetch from 'node-fetch'
 import { quote } from 'yahoo-finance/lib'
-import { IEX } from './utils/external'
+
+import { IEX, edgar, authorize } from './utils'
+
 
 /* Types Decleration */
 
@@ -60,6 +62,7 @@ const typeDefs = gql`
     market: Market
     earnings: Earnings
     news: [News]
+    filings: [FilingsType!]
   }
   type NewsFeed {
     ticker: String!
@@ -68,6 +71,12 @@ const typeDefs = gql`
   type EarningsFeed {
     ticker: String!
     earnings: Earnings!
+  }
+  type FilingsType {
+    title: String!
+    link: String!
+    pubDate: String!
+    content: String!
   }
   type Query {
     companyByTicker(ticker: String!, limit: Int): Company
@@ -129,12 +138,13 @@ async function getNews(ticker, limit) {
 
 /* Resolver Functions */
 
-const companyByTicker = async (_, { ticker, limit = 5}) => {
-  const [market, news, earnings, profile] = await Promise.all([
+const companyByTicker = async (_, { ticker, limit = 5 }) => {
+  const [market, news, earnings, profile, filings] = await Promise.all([
     getMarket(ticker),
     getNews(ticker, limit),
     getEarnings(ticker),
     getProfile(ticker),
+    edgar.getFeed(ticker),
   ])
   return {
     ticker: ticker.toUpperCase(),
@@ -142,6 +152,7 @@ const companyByTicker = async (_, { ticker, limit = 5}) => {
     news,
     earnings,
     profile,
+    filings,
   }
 }
 
@@ -187,4 +198,4 @@ const server = new ApolloServer({
   }),
 })
 
-exports.handler = server.createHandler()
+exports.handler = authorize(server.createHandler())

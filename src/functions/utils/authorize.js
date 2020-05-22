@@ -1,8 +1,8 @@
 export default (child) => {
   return async (event, context, callback) => {
-    if (!context || !context.clientContext || !context.clientContext.user) {
+    if (!context?.clientContext?.user) {
       return {
-        statusCode: 400,
+        statusCode: 401,
         body: 'Unauthorized'
       }
     }

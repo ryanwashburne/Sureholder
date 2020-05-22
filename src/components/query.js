@@ -1,11 +1,13 @@
 import React from 'react'
 
+import Link from './link'
+
 const Error = () => {
   return (
     <div className="h-screen w-full flex justify-center flex-col items-center">
       <h1 className="text-4xl font-bold">ERROR</h1>
       <p>Something went wrong. Please wait a few seconds and reload the page to try again</p>
-      <p>If the issue is not resolved, please contact: <a href="mailto:sureholder@gmail.com">sureholder@gmail.com</a></p>
+      <p>If the issue is not resolved, please contact: <Link href="mailto:sureholder@gmail.com">sureholder@gmail.com</Link></p>
     </div>
   )
 }
