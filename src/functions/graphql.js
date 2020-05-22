@@ -185,17 +185,23 @@ const resolvers = {
     newsFeed,
     earningsFeed,
   },
-  // Mutation: {
+  // Mutation: {s
   // },
 }
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ context, ...rest }) => ({
-    user: context.clientContext.user,
-    context,
-    ...rest,
-  }),
+  context: ({ context, ...rest }) => {
+    const user = context?.clientContext?.user
+    if (!user) {
+      return 
+    }
+    return {
+      user: context?.clientContext?.user,
+      context,
+      ...rest,
+    }
+  },
 })
 
 exports.handler = authorize(server.createHandler())
