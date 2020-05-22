@@ -1,7 +1,7 @@
 import { gql } from 'apollo-boost'
 
 export const NEWS_FRAGMENT = gql`
-  fragment newsFragment on News {
+  fragment newsFragment on NewsType {
     datetime
     headline
     image
@@ -13,7 +13,7 @@ export const NEWS_FRAGMENT = gql`
 `
 
 export const PROFILE_FRAGMENT = gql`
-  fragment profileFragment on Profile {
+  fragment profileFragment on ProfileType {
     website
     description
     sector
@@ -23,7 +23,7 @@ export const PROFILE_FRAGMENT = gql`
 `
 
 export const MARKET_FRAGMENT = gql`
-  fragment marketFragment on Market {
+  fragment marketFragment on MarketType {
     price
     changesPercentage
     change
@@ -35,7 +35,7 @@ export const MARKET_FRAGMENT = gql`
 `
 
 export const EARNINGS_FRAGMENT = gql`
-  fragment earningsFragment on Earnings {
+  fragment earningsFragment on EarningsType {
     earningsChart {
       quarterly {
         date
@@ -72,7 +72,7 @@ export const FILINGS_FRAGMENT = gql`
 `
 
 export const NEWS_FEED_FRAGMENT = gql`
-  fragment newsFeedFragment on NewsFeed {
+  fragment newsFeedFragment on NewsFeedType {
     ticker
     news {
       ...newsFragment
@@ -82,7 +82,7 @@ export const NEWS_FEED_FRAGMENT = gql`
 `
 
 export const EARNINGS_FEED_FRAGMENT = gql`
-  fragment earningsFeedFragment on EarningsFeed {
+  fragment earningsFeedFragment on EarningsFeedType {
     ticker
     earnings {
       ...earningsFragment
@@ -92,7 +92,7 @@ export const EARNINGS_FEED_FRAGMENT = gql`
 `
 
 export const COMPANY_FRAGMENT = gql`
-  fragment companyFragment on Company {
+  fragment companyFragment on CompanyType {
     ticker
     market {
       ...marketFragment
@@ -118,7 +118,7 @@ export const COMPANY_FRAGMENT = gql`
 `
 
 export const UPDATE_FRAGMENT = gql`
-  fragment updateFragment on Update {
+  fragment updateFragment on UpdateType {
     company {
       ticker
     }
