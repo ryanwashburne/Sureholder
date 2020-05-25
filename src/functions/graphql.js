@@ -1,9 +1,9 @@
 import { ApolloServer, gql } from 'apollo-server-lambda'
 import { authorize } from './utils'
 
-import { companyByTicker, CompanyType} from './resolvers/company'
-import { newsFeed, NewsFeedType } from './resolvers/newsfeed'
-import { earningsFeed, EarningsFeedType } from './resolvers/earningsfeed'
+import { CompanyResolvers, CompanyType } from './resolvers/company'
+import { NewsFeedResolvers, NewsFeedType } from './resolvers/newsfeed'
+import { EarningsFeedResolvers, EarningsFeedType } from './resolvers/earningsfeed'
 
 /* Types Decleration */
 
@@ -11,8 +11,9 @@ const typeDefs = gql`
   ${CompanyType}
   ${NewsFeedType}
   ${EarningsFeedType}
-  type Query {
-    hello: String!
+  type Query
+  type Mutation {
+    echo(input: String!): String!
   }
 `
 
@@ -20,13 +21,14 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    companyByTicker,
-    newsFeed,
-    earningsFeed,
-    hello: () => 'ok!',
+    ...CompanyResolvers.Query,
+    ...NewsFeedResolvers.Query,
+    ...EarningsFeedResolvers.Query,
   },
-  // Mutation: {
-  // },
+  Mutation: {
+    ...CompanyResolvers.Mutation,
+    echo: (_, { input }) => input,
+  },
 }
 const server = new ApolloServer({
   typeDefs,

@@ -5,7 +5,7 @@ function getToken() {
   try {
     accessToken = JSON.parse(localStorage.getItem('gotrue.user')).token.access_token
   } catch(_) {}
-  return accessToken ? `Bearer ${accessToken}` : '';
+  return accessToken ? `Bearer ${accessToken}` : ''
 }
 
 const client = new ApolloClient({

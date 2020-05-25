@@ -1,6 +1,6 @@
 import { getNews } from '../../data'
 
-export default async (_, { tickers, limit = 5 }) => {
+const newsFeed = async (_, { tickers, limit = 5 }) => {
   const allData = await Promise.all(tickers.map(ticker => getNews(ticker.toUpperCase()), Math.round(tickers / limit)))
   const allNews = []
   allData.forEach((tickerNews, i) => {
@@ -13,4 +13,10 @@ export default async (_, { tickers, limit = 5 }) => {
   })
   allNews.sort((a, b) => a.news.datetime < b.news.datetime ? 1 : -1)
   return allNews.splice(0, limit)
+}
+
+export default {
+  Query: {
+    newsFeed,
+  }
 }

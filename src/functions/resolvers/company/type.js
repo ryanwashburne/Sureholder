@@ -1,6 +1,6 @@
 import { gql } from 'apollo-server-lambda'
 
-const ProfileType = gql`
+const CompanyTypes = gql`
   type ProfileType {
     website: String
     description: String
@@ -8,8 +8,7 @@ const ProfileType = gql`
     industry: String
     companyName: String
   }
-`
-const MarketType = gql`
+  
   type MarketType {
     price: Float
     changesPercentage: Float
@@ -19,9 +18,7 @@ const MarketType = gql`
     marketCap: Float
     volume: Int,
   }
-`
 
-const EarningsType = gql`
   type EarningsDate {
     date: String!
     revenue: Float
@@ -29,6 +26,7 @@ const EarningsType = gql`
     actual: Float
     estimate: Float
   }
+
   type EarningsChartType {
     quarterly: [EarningsDate!]!
     currentQuarterEstimate: Float!
@@ -36,17 +34,17 @@ const EarningsType = gql`
     currentQuarterEstimateYear: Int!
     earningsDate: [Float!]!
   }
+
   type FinancialsChartType {
     yearly: [EarningsDate]!
     quarterly: [EarningsDate]!
   }
+
   type EarningsType {
     earningsChart: EarningsChartType
     financialsChart: FinancialsChartType
   }
-`
 
-const NewsType = gql`
   type NewsType {
     datetime: Float
     headline: String
@@ -57,23 +55,32 @@ const NewsType = gql`
     url: String
     ticker: String!
   }
-`
 
-const FilingsType = gql`
   type FilingsType {
     title: String!
     link: String!
     pubDate: String!
     content: String!
   }
+
+  type UpdateType {
+    id: Int!
+    date: String!
+    title: String!
+    content: String!
+    ticker: String!
+  }
+
+  input AddUpdateInput {
+    date: String!
+    title: String!
+    content: String!
+    ticker: String!
+  }
 `
 
 export default gql`
-  ${ProfileType}
-  ${MarketType}
-  ${EarningsType}
-  ${NewsType}
-  ${FilingsType}
+  ${CompanyTypes}
 
   type CompanyType {
     ticker: String!
@@ -82,9 +89,15 @@ export default gql`
     earnings: EarningsType!
     news: [NewsType!]
     filings: [FilingsType!]
+    updates: [UpdateType!]
   }
 
   extend type Query {
     companyByTicker(ticker: String!, limit: Int): CompanyType
+  }
+
+  extend type Mutation {
+    addUpdate(addUpdateInput: AddUpdateInput!): UpdateType!
+    delUpdate(id: Int!): Int
   }
 `

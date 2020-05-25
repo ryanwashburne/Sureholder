@@ -1,65 +1,83 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { google } = require('googleapis')
-const moment = require('moment')
 if (process.env.NODE_ENV !== 'production' || process.env.NETLIFY_DEV === 'true') require('dotenv').config()
 
+const credentials = {
+  client_email: process.env.MY_GOOGLE_EMAIL,
+  private_key: process.env.MY_GOOGLE_KEY.replace(new RegExp('\\\\n', 'g'), '\n'),
+}
 const auth = new google.auth.GoogleAuth({
-  credentials: {
-    client_email: process.env.MY_GOOGLE_EMAIL,
-    private_key: process.env.MY_GOOGLE_KEY.replace(new RegExp('\\\\n', 'g'), '\n'),
-  },
+  credentials,
   scopes: ['https://www.googleapis.com/auth/drive'],
 })
 const drive = google.drive({
   version: 'v3',
   auth,
 })
-const folderId = '1lkJIo86kd0VIUZvnV7USCd_GNs0f8W7N'
 const params = {
-  q: `'${folderId}' in parents`
+  q: `'${process.env.GOOGLE_UPDATES_ID}' in parents`
 }
 
-async function getFileId(ticker) {
+// unused vv
+const loadDocByTicker = async (ticker) => {
   const res = await drive.files.list(params)
   const data = res.data.files.filter(file => {
-    return file.name === ticker
+    return file.name.toUpperCase() === ticker.toUpperCase()
   })
-  if (data.length > 0) {
-    return data[0].id
+  if (data.length === 0) {
+    throw new Error('No ticker found in folder')
   }
-  return null
+  const id = data[0].id
+  const doc = new GoogleSpreadsheet(id)
+  await doc.useServiceAccountAuth(credentials)
+  await doc.loadInfo()
+  return doc
+}
+// unused ^^
+
+const loadDoc = async () => {
+  const id = `10zYyvpKEr1MyZbWwm-DgFrF4Ygchw1XBE61w7ygzgOM`
+  const doc = new GoogleSpreadsheet(id)
+  await doc.useServiceAccountAuth(credentials)
+  await doc.loadInfo()
+  return doc
+}
+const loadSheet = async () => {
+  const doc = await loadDoc()
+  return doc.sheetsByIndex[0]
+}
+const loadRows = async () => {
+  const sheet = await loadSheet()
+  return await sheet.getRows()
 }
 
-async function main(ticker, limit) {
-  const id = await getFileId(ticker)
-  if (!id) {
-    return []
+export const setSheet = async (ticker, data) => {
+  const sheet = await loadSheet()
+  const row = await sheet.addRow({ ticker, ...data })
+  return {
+    ...row,
+    id: row._rowNumber
   }
-  const doc = new GoogleSpreadsheet(id)
-  doc.useApiKey(process.env.MY_GOOGLE_ACCESS_KEY)
-  await doc.loadInfo()
-  const sheet = doc.sheetsByIndex[0]
-  const rows = await sheet.getRows()
-  const filteredRows = rows.filter((row, i) => {
-    if (i > limit) {
+}
+
+export const getSheet = async (ticker) => {
+  const rows = await loadRows()
+  const filtered = rows.filter(row => {
+    return row.ticker.toUpperCase() === ticker.toUpperCase()
+  })
+  return filtered.map(row => ({ ...row, id: row._rowNumber }))
+}
+
+export const delUpdate = async (id) => {
+  const rows = await loadRows()
+  let rtn
+  rows.every(async row => {
+    if (row._rowNumber === id) {
+      await row.delete()
+      rtn = id
       return false
     }
-    return (
-      row.PressReleasesTitle.length > 0 &&
-      row.PressReleasesDateTime.length > 0 &&
-      row.Description.length > 0 &&
-      row.PressReleasesUrl.length > 0
-    )
+    return true
   })
-  return filteredRows.map(row => ({
-    category: 'earnings',
-    related: ticker,
-    source: 'googlesheets',
-    headline: row.PressReleasesTitle.trim(),
-    datetime: moment(new Date(row.PressReleasesDateTime.trim())).unix(),
-    summary: row.Description.trim(),
-    url: row.PressReleasesUrl.trim(),
-  }))
+  return rtn
 }
-
-module.exports = main

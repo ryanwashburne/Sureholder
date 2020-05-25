@@ -91,6 +91,15 @@ export const EARNINGS_FEED_FRAGMENT = gql`
   ${EARNINGS_FRAGMENT}
 `
 
+export const UPDATE_FRAGMENT = gql`
+  fragment updateFragment on UpdateType {
+    id
+    title
+    date
+    content
+  }
+`
+
 export const COMPANY_FRAGMENT = gql`
   fragment companyFragment on CompanyType {
     ticker
@@ -109,21 +118,14 @@ export const COMPANY_FRAGMENT = gql`
     filings {
       ...filingsFragment
     }
+    updates {
+      ...updateFragment
+    }
   }
   ${MARKET_FRAGMENT}
   ${NEWS_FRAGMENT}
   ${EARNINGS_FRAGMENT}
   ${PROFILE_FRAGMENT}
   ${FILINGS_FRAGMENT}
-`
-
-export const UPDATE_FRAGMENT = gql`
-  fragment updateFragment on UpdateType {
-    company {
-      ticker
-    }
-    title
-    date
-    link
-  }
+  ${UPDATE_FRAGMENT}
 `

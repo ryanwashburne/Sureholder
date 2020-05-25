@@ -18,9 +18,8 @@ import {
 export default () => {
   const identity = useIdentityContext()
   const { updateUser, user } = identity
-  const following = user.user_metadata.follow || []
 
-  const [tickers, changeTickers] = React.useState(following)
+  const [tickers, changeTickers] = React.useState(user?.user_metadata?.follow || [])
 
   const { data, loading, error } = useQuery(
     QUERIES.NEWS_FEED,

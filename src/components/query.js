@@ -25,7 +25,7 @@ const Loading = () => {
       })
     }, 800)
     return () => {
-      window.clearInterval(timer);
+      window.clearInterval(timer)
     }
   }, [])
 
