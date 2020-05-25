@@ -119,7 +119,7 @@ const Stock = ({ ticker }) => {
           })}
         </section>
 
-        <section>
+        {isAdmin(user) && (<section>
           <form onSubmit={e => { e.preventDefault(); addUpdate({variables: {
             addUpdateInput: {
               content: input,
@@ -132,7 +132,7 @@ const Stock = ({ ticker }) => {
             <input name="test-data" value={input} onChange={e => changeInput(e.target.value)} />
             <button type="submit">Submit</button>
           </form>
-        </section>
+        </section>)}
       </div>
       <div className="w-1/4 ml-2">
         <h3 className="text-lg">Latest News:</h3>
