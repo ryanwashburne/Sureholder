@@ -28,21 +28,21 @@ const CompanyTypes = gql`
   }
 
   type EarningsChartType {
-    quarterly: [EarningsDate!]!
-    currentQuarterEstimate: Float!
-    currentQuarterEstimateDate: String!
-    currentQuarterEstimateYear: Int!
-    earningsDate: [Float!]!
+    quarterly: [EarningsDate!]
+    currentQuarterEstimate: Float
+    currentQuarterEstimateDate: String
+    currentQuarterEstimateYear: Int
+    earningsDate: [Float!]
   }
 
   type FinancialsChartType {
-    yearly: [EarningsDate]!
-    quarterly: [EarningsDate]!
+    yearly: [EarningsDate]
+    quarterly: [EarningsDate]
   }
 
   type EarningsType {
-    earningsChart: EarningsChartType
-    financialsChart: FinancialsChartType
+    earningsChart: EarningsChartType!
+    financialsChart: FinancialsChartType!
   }
 
   type NewsType {
@@ -69,6 +69,7 @@ const CompanyTypes = gql`
     title: String!
     content: String!
     ticker: String!
+    url: String
   }
 
   input AddUpdateInput {
@@ -76,6 +77,7 @@ const CompanyTypes = gql`
     title: String!
     content: String!
     ticker: String!
+    url: String
   }
 `
 

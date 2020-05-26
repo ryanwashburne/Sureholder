@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import { quote } from 'yahoo-finance/lib'
 
-import { IEX, edgar, google } from './external'
+import { IEX, FINPREP, edgar, google } from './external'
 
 export const getProfile = async (ticker) => {
   const response = await quote(ticker, ['summaryProfile', 'price'])
@@ -50,6 +50,12 @@ export const getNews = async (ticker, limit) => {
     ...news,
     ticker,
   }))
+}
+
+export const tickerSearch = async (search) => {
+  const result = await fetch(FINPREP(`/search?query=${search}&limit=3&exchange=NASDAQ`))
+  const data = await result.json()
+  return data.map(({ symbol, name }) => ({ ticker: symbol, name }))
 }
 
 /* EDGAR Helpers */

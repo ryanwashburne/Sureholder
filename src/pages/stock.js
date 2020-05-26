@@ -1,5 +1,4 @@
 import React from 'react'
-import { useIdentityContext } from 'react-netlify-identity'
 import moment from 'moment'
 
 import { useQuery, useMutation } from '@apollo/react-hooks'
@@ -15,22 +14,17 @@ import {
 import {
   toMoney,
   MOMENT_FORMAT,
-  isAdmin,
+  useAuth,
+  ADMIN,
 } from '../utils'
 
 const Stock = ({ ticker }) => {
-  const identity = useIdentityContext()
-  const { updateUser, user } = identity
+  const { updateUser, user, viewingMode } = useAuth()
   const following = user.user_metadata.follow || []
 
   const [followingStock, changeFollowStock] = React.useState(following.indexOf(ticker) > -1)
   const [disabled, changeDisabled] = React.useState(false)
 
-  const [input, changeInput] = React.useState('')
-  const [addUpdate, { data: dataU, error: errorU }]= useMutation(MUTATIONS.ADD_UPDATE)
-  if (dataU || errorU) {
-    console.log(dataU, errorU)
-  }
   const [delUpdate, { data: dataD, error: errorD }]= useMutation(MUTATIONS.DELETE_UPDATE)
   if (dataD || errorD) {
     console.log(dataD, errorD)
@@ -79,16 +73,21 @@ const Stock = ({ ticker }) => {
   return (
     <div className="bg-white p-8 flex">
       <div className="w-3/4">
-        {updates.map(({ title, content, date, id }, i) => {
-          return isAdmin(user) ? (
-            <div key={i} className="mb-8">
-              <p className="font-bold">{title}</p>
-              <p>{content}</p>
-              <p className="text-xs">{date}</p>
-              <button onClick={() => delUpdate({ variables: { id }})} className="btn--primary">Delete</button>
-            </div>
-          ) : null
-        })}
+        {updates.length > 0 && <h3 className="font-semibold mb-2">Sureholder Updates:</h3>}
+        <div className="flex overflow-x-scroll mb-8">
+          {updates.map(({ title, content, date, id }, i) => {
+            return (
+              <div key={i} className="mr-4 p-2 bg-gray-200" style={{ minWidth: 200 }}>
+                <p className="font-bold">{title}</p>
+                <p>{content}</p>
+                <p className="text-xs">{date}</p>
+                {viewingMode.id === ADMIN && (
+                  <button onClick={() => { delUpdate({ variables: { id }}); window.location.reload() }} className="mt-2 btn">Delete</button>
+                )}
+              </div>
+            )
+          })}
+        </div>
         <h1 className="text-4xl">{ticker}</h1>
         <p>{companyName}</p>
         <p className="italic text-xs my-4">{description}</p>
@@ -105,7 +104,7 @@ const Stock = ({ ticker }) => {
             <p>Price: ${toMoney(market.price)}</p>
             <p>High: ${toMoney(market.dayHigh)}</p>
             <p>Low: ${toMoney(market.dayLow)}</p>
-            <p>Change: {market.change}%</p>
+            <p>Change: {Number(market.change).toFixed(2)}%</p>
           </div>
         </div>
         <section>
@@ -118,21 +117,6 @@ const Stock = ({ ticker }) => {
             )
           })}
         </section>
-
-        {isAdmin(user) && (<section>
-          <form onSubmit={e => { e.preventDefault(); addUpdate({variables: {
-            addUpdateInput: {
-              content: input,
-              date: moment().format('YYYY-MM-DD'),
-              title: 'Title Here',
-              ticker,
-            }
-          }})}}>
-            <label htmlFor="test-data">Add Update</label>
-            <input name="test-data" value={input} onChange={e => changeInput(e.target.value)} />
-            <button type="submit">Submit</button>
-          </form>
-        </section>)}
       </div>
       <div className="w-1/4 ml-2">
         <h3 className="text-lg">Latest News:</h3>

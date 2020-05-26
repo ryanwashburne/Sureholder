@@ -5,13 +5,21 @@ import { CompanyResolvers, CompanyType } from './resolvers/company'
 import { NewsFeedResolvers, NewsFeedType } from './resolvers/newsfeed'
 import { EarningsFeedResolvers, EarningsFeedType } from './resolvers/earningsfeed'
 
+import { tickerSearch } from './data'
+
 /* Types Decleration */
 
 const typeDefs = gql`
   ${CompanyType}
   ${NewsFeedType}
   ${EarningsFeedType}
-  type Query
+  type SearchType {
+    name: String!
+    ticker: String!
+  }
+  type Query {
+    tickerSearch(search: String!): [SearchType!]
+  }
   type Mutation {
     echo(input: String!): String!
   }
@@ -24,6 +32,7 @@ const resolvers = {
     ...CompanyResolvers.Query,
     ...NewsFeedResolvers.Query,
     ...EarningsFeedResolvers.Query,
+    tickerSearch: async (_, { search }) => await tickerSearch(search)
   },
   Mutation: {
     ...CompanyResolvers.Mutation,

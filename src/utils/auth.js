@@ -2,17 +2,47 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import { useIdentityContext } from 'react-netlify-identity'
 
-import {
-  isAdmin,
-} from './'
+export const NONUSER = 0
+export const USER = 1
+export const ADMIN = 3
 
-export default ({ admin, children }) => {
-  const [loading, changeLoading] = React.useState(true)
+const getName = mode => {
+  switch (mode) {
+    case USER:
+      return 'USER'
+    case ADMIN:
+      return 'ADMIN'
+    default:
+      return 'NONUSER'
+  }
+}
+
+const AuthContext = React.createContext()
+export const useAuth = () => React.useContext(AuthContext)
+export const AuthProvider = ({ children }) => {
   const identity = useIdentityContext()
-  const { user } = identity
-  const isLoggedIn = identity && identity.isLoggedIn
-  const now = new Date().getTime()
+  const { roles } = identity?.user?.app_metadata
+  const admin = roles?.indexOf('admin') > -1
+  const [mode, changeViewingMode] = React.useState(admin ? ADMIN : USER)
+  return (
+    <AuthContext.Provider value={{
+      isAdmin: admin,
+      viewingMode: {
+        id: mode,
+        name: getName(mode)
+      },
+      changeViewingMode,
+      ...identity,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
 
+export const AuthRoute = ({ admin, children }) => {
+  const [loading, changeLoading] = React.useState(true)
+  const { isLoggedIn, user, viewingMode } = useAuth()
+  const now = new Date().getTime()
   React.useEffect(() => {
     async function loadJwt() {
       try {
@@ -33,9 +63,11 @@ export default ({ admin, children }) => {
     return null
   }
 
-  if (!isLoggedIn || !user) { return <Redirect to="/auth" /> }
+  if (!isLoggedIn || !user) {
+    return <Redirect to="/auth" />
+  }
 
-  if (admin && !isAdmin(user)) {
+  if (admin && viewingMode.id !== ADMIN) {
     return <Redirect to="/" />
   }
 

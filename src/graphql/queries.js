@@ -37,3 +37,12 @@ export const EARNINGS_FEED = gql`
   }
   ${FRAGMENTS.EARNINGS_FEED_FRAGMENT}
 `
+
+export const TICKER_SEARCH = gql`
+  query ($search: String!) {
+    tickerSearch(search: $search) {
+      name
+      ticker
+    }
+  }
+`

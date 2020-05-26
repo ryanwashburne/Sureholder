@@ -36,8 +36,7 @@ const loadDocByTicker = async (ticker) => {
 // unused ^^
 
 const loadDoc = async () => {
-  const id = `10zYyvpKEr1MyZbWwm-DgFrF4Ygchw1XBE61w7ygzgOM`
-  const doc = new GoogleSpreadsheet(id)
+  const doc = new GoogleSpreadsheet(process.env.MY_GOOGLE_UPDATES_ID)
   await doc.useServiceAccountAuth(credentials)
   await doc.loadInfo()
   return doc

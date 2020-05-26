@@ -13,7 +13,7 @@ import {
   StockPage,
 } from './pages'
 
-import Auth from './utils/auth'
+import { AuthRoute, AuthProvider } from './utils'
 
 const ErrorPage = () => {
   return (
@@ -26,28 +26,30 @@ const ErrorPage = () => {
 
 const PrivateRoute = ({ admin, ...props }) => {
   return (
-    <Auth admin={admin}>
+    <AuthRoute admin={admin}>
       <Route {...props} />
-    </Auth>
+    </AuthRoute>
   )
 }
 
 export default () => {
   return (
     <IdentityContextProvider url={`https://sureholder.netlify.app`}>
-      <ApolloProvider client={client}>
-        <Router>
-          <Switch>
-            <PrivateRoute exact path={`/`} component={DashboardPage} />
-            <PrivateRoute exact path={`/s/:ticker`} component={StockPage} />
-            <PrivateRoute exact path={`/s/:ticker/:articleId`} component={StockPage} />
-            <PrivateRoute exact path={`/settings`} component={SettingsPage} />
-            <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
-            <Route exact path={`/auth`} component={AuthPage} />
-            <Route component={ErrorPage} />
-          </Switch>
-        </Router>
-      </ApolloProvider>
+      <AuthProvider>
+        <ApolloProvider client={client}>
+          <Router>
+            <Switch>
+              <PrivateRoute exact path={`/`} component={DashboardPage} />
+              <PrivateRoute exact path={`/s/:ticker`} component={StockPage} />
+              <PrivateRoute exact path={`/s/:ticker/:articleId`} component={StockPage} />
+              <PrivateRoute exact path={`/settings`} component={SettingsPage} />
+              <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
+              <Route exact path={`/auth`} component={AuthPage} />
+              <Route component={ErrorPage} />
+            </Switch>
+          </Router>
+        </ApolloProvider>
+      </AuthProvider>
     </IdentityContextProvider>
   )
 }

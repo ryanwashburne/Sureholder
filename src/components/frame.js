@@ -1,14 +1,13 @@
 import React from 'react'
-import { NavLink, withRouter } from 'react-router-dom'
-import { useIdentityContext } from 'react-netlify-identity'
+import { NavLink } from 'react-router-dom'
+
+import Link from './link'
+import Autocomplete from './autocomplete'
 
 import {
-  Input,
-  Link,
-} from './'
-
-import {
-  isAdmin,
+  useAuth,
+  ADMIN,
+  USER,
 } from '../utils'
 
 import { ReactComponent as HomeIcon } from '../images/icons/home.svg'
@@ -28,36 +27,39 @@ const Pill = ({ to, icon, children }) => {
   )
 }
 
-export default withRouter(({ history, ...props }) => {
+export default ({ children }) => {
   const [popper, changePopper] = React.useState()
-  const [search, changeSearch] = React.useState('')
-  const identity = useIdentityContext()
-  const { user } = identity
+  const { user, changeViewingMode, viewingMode } = useAuth()
   return (
     <div className="flex min-h-screen">
       <div className="fixed h-full text-white bg-gray-900 flex" style={{ width: RIGHT_DRAWER }}>
         <div className="flex flex-col bg-gray-800 text-md text-gray-500" style={{ width: RIGHT_DRAWER }}>
           <div className="p-4 flex-1">
-            <form className="flex" onSubmit={(e) => { const s = search; e.preventDefault(); changeSearch(''); history.push(`/s/${s}`); window.location.reload() }}>
-              <Input
-                name="search"
-                placeholder="Search..."
-                onChange={(e) => changeSearch(e.target.value)}
-                value={search}
-              />
-              <button className="ml-2 bg-gray-600 p-2 rounded text-gray-100">Go</button>
-            </form>
+            <Autocomplete
+              onLoading={() => <p>Loading...</p>}
+              onData={(data, clear) => data?.map(({ name, ticker }, i) => {
+                return (
+                  <div key={i} className="mb-2">
+                    <Link to={`/s/${ticker}`} onClick={clear} className="text-white hover:text-gray-400 font-semibold">{name} <span className="text-xs">{ticker}</span></Link>
+                  </div>
+                )
+              })}
+            />
 
-            <div className="my-8" />
+            <div className="my-6" />
             
             <Pill to="" icon={<HomeIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
               Dashboard
             </Pill>
-            {isAdmin(user) && <Pill to="admin" icon={<UserIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
-              Admin
-            </Pill>}
+            {viewingMode.id === ADMIN && (
+              <Pill to="admin" icon={<UserIcon className="fill-current inline" style={{ width: 20, height: 20 }} />}>
+                Admin
+              </Pill>
+            )}
           </div>
-
+          <div className="px-4">
+            <button className="hover:bg-gray-700 rounded px-2 py-1" onClick={() => changeViewingMode(viewingMode.id === ADMIN ? USER : ADMIN)}>Viewing Mode: {viewingMode.name}</button>
+          </div>
           <div className="p-4 flex items-center">
             <span>{user.user_metadata.full_name}</span>
             <div className="flex-1" />
@@ -94,8 +96,8 @@ export default withRouter(({ history, ...props }) => {
       
 
       <main className="h-min-screen bg-gray-200 p-4 mx-auto" style={{ width: `calc(100% - ${RIGHT_DRAWER}px)`}}>
-        {props.children}
+        {children}
       </main>
     </div>
   )
-})
+}
