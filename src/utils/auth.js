@@ -21,7 +21,7 @@ const AuthContext = React.createContext()
 export const useAuth = () => React.useContext(AuthContext)
 export const AuthProvider = ({ children }) => {
   const identity = useIdentityContext()
-  const { roles } = identity?.user?.app_metadata
+  const roles = identity?.user?.app_metadata?.roles
   const admin = roles?.indexOf('admin') > -1
   const [mode, changeViewingMode] = React.useState(admin ? ADMIN : USER)
   return (
