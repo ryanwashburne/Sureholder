@@ -3,6 +3,7 @@ import { useIdentityContext } from 'react-netlify-identity'
 
 import {
   Frame,
+  Helmet,
 } from '../components'
 
 export default () => {
@@ -10,6 +11,7 @@ export default () => {
   const { updateUser } = identity
   return (
     <Frame>
+      <Helmet>Settings</Helmet>
       <button className="btn--secondary" onClick={() => {
         identity.logoutUser()
         window.location.reload()

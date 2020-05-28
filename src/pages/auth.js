@@ -4,6 +4,10 @@ import IdentityModal from 'react-netlify-identity-widget'
 import 'react-netlify-identity-widget/styles.css'
 
 import {
+  Helmet,
+} from '../components'
+
+import {
   useAuth,
 } from '../utils'
 
@@ -15,6 +19,7 @@ export default withRouter(({ history }) => {
   }
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
+      <Helmet>Auth</Helmet>
       <h1 className="text-5xl font-bold mb-2">Sureholder</h1>
       <button
         className="btn"

@@ -9,6 +9,7 @@ import {
   Frame,
   Query,
   Link,
+  Helmet,
 } from '../components'
 
 import {
@@ -35,6 +36,7 @@ export default () => {
   const { earningsFeed } = dataE
   return (
     <Frame>
+      <Helmet>Dashboard</Helmet>
       <div className="flex">
         <div className="w-3/4 pr-2">
           <div className="bg-white rounded p-4">

@@ -5,18 +5,20 @@ import * as MUTATIONS from '../graphql/mutations'
 
 import moment from 'moment'
 import { Formik, Form, Field } from 'formik'
-import * as Yup from 'yup'
 
 import {
   Frame,
   Input,
   Card,
+  Helmet,
 } from '../components'
+import { ADD_UPDATE_SCHEMA } from '../utils'
 
 export default () => {
   const [addUpdate, { loading }]= useMutation(MUTATIONS.ADD_UPDATE)
   return (
     <Frame>
+      <Helmet>Admin</Helmet>
       <h1 className="text-4xl">Admin</h1>
       <Card>
         <h3 className="text-xl mb-4">New Update</h3>
@@ -28,18 +30,7 @@ export default () => {
             date: moment().format('YYYY-MM-DD'),
             url: '',
           }}
-          validationSchema={Yup.object({
-            ticker: Yup.string()
-              .required('Required'),
-            title: Yup.string()
-              .required('Required'),
-            content: Yup.string()
-              .required('Required'),
-            date: Yup.string()
-              .required('Required'),
-            url: Yup.string()
-              .url('Invalid URL'),
-          })}
+          validationSchema={ADD_UPDATE_SCHEMA}
           onSubmit={async ({ ticker, title, content, date, url }) => {
             await addUpdate({
               variables: {

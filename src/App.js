@@ -41,7 +41,6 @@ export default () => {
             <Switch>
               <PrivateRoute exact path={`/`} component={DashboardPage} />
               <PrivateRoute exact path={`/s/:ticker`} component={StockPage} />
-              <PrivateRoute exact path={`/s/:ticker/:articleId`} component={StockPage} />
               <PrivateRoute exact path={`/settings`} component={SettingsPage} />
               <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
               <Route exact path={`/auth`} component={AuthPage} />

@@ -64,7 +64,7 @@ export const getSheet = async (ticker) => {
   const filtered = rows.filter(row => {
     return row.ticker.toUpperCase() === ticker.toUpperCase()
   })
-  return filtered.map(row => ({ ...row, id: row._rowNumber }))
+  return filtered.map(row => ({ ...row, id: row._rowNumber })).reverse()
 }
 
 export const delUpdate = async (id) => {

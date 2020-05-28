@@ -1,10 +1,14 @@
 import * as Yup from 'yup'
 
-export const UpdateSchema = Yup.object().shape({
+export const ADD_UPDATE_SCHEMA = Yup.object({
+  ticker: Yup.string()
+    .required('Required'),
   title: Yup.string()
     .required('Required'),
-  date: Yup.date()
+  content: Yup.string()
     .required('Required'),
-  link: Yup.string()
+  date: Yup.string()
+    .required('Required'),
+  url: Yup.string()
     .url('Invalid URL'),
 })

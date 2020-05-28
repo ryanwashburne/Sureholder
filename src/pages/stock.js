@@ -9,6 +9,7 @@ import {
   Frame,
   Query,
   Link,
+  Helmet,
 } from '../components'
 
 import {
@@ -72,6 +73,7 @@ const Stock = ({ ticker }) => {
   const { companyName, description, website } = profile
   return (
     <div className="bg-white p-8 flex">
+      <Helmet>{ticker}</Helmet>
       <div className="w-3/4">
         {updates.length > 0 && <h3 className="font-semibold mb-2">Sureholder Updates:</h3>}
         <div className="flex overflow-x-scroll mb-8">
@@ -80,7 +82,7 @@ const Stock = ({ ticker }) => {
               <div key={i} className="mr-4 p-2 bg-gray-200" style={{ minWidth: 200 }}>
                 <p className="font-bold">{title}</p>
                 <p>{content}</p>
-                <p className="text-xs">{date}</p>
+                <p className="text-xs">{moment(date).format(MOMENT_FORMAT)}</p>
                 {viewingMode.id === ADMIN && (
                   <button onClick={() => { delUpdate({ variables: { id }}); window.location.reload() }} className="mt-2 btn">Delete</button>
                 )}
@@ -139,20 +141,6 @@ const Stock = ({ ticker }) => {
 }
 
 export default ({ match }) => {
-  if (!match?.params?.ticker) {
-    return (
-      <Frame>
-        <p>Please provide a ticker.</p>
-      </Frame>
-    )
-  }
-  if (!isNaN(match.params.articleId)) {
-    return (
-      <Frame>
-        <p>{match.params.articleId}</p>
-      </Frame>
-    )
-  }
   return (
     <Frame>
       <Stock ticker={match.params.ticker.toUpperCase()} />
