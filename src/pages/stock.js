@@ -10,6 +10,7 @@ import {
   Query,
   Link,
   Helmet,
+  Card,
 } from '../components'
 
 import {
@@ -17,9 +18,11 @@ import {
   MOMENT_FORMAT,
   useAuth,
   ADMIN,
+  useColorMode,
 } from '../utils'
 
 const Stock = ({ ticker }) => {
+  const { cm } = useColorMode()
   const { updateUser, user, viewingMode } = useAuth()
   const following = user.user_metadata.follow || []
 
@@ -72,78 +75,81 @@ const Stock = ({ ticker }) => {
   const { market, news, profile, filings, updates } = companyByTicker
   const { companyName, description, website } = profile
   return (
-    <div className="bg-white p-8 flex">
-      <Helmet>{ticker}</Helmet>
-      <div className="w-3/4">
-        {updates.length > 0 && <h3 className="font-semibold mb-2">Sureholder Updates:</h3>}
-        <div className="flex overflow-x-scroll mb-8">
-          {updates.map(({ title, content, date, id }, i) => {
-            return (
-              <div key={i} className="mr-4 p-2 bg-gray-200" style={{ minWidth: 200 }}>
-                <p className="font-bold">{title}</p>
-                <p>{content}</p>
-                <p className="text-xs">{moment(date).format(MOMENT_FORMAT)}</p>
-                {viewingMode.id === ADMIN && (
-                  <button onClick={() => { delUpdate({ variables: { id }}); window.location.reload() }} className="mt-2 btn">Delete</button>
+    <Frame gutter>
+      <div className="flex">
+        <Helmet>{ticker}</Helmet>
+        <div className="w-3/4">
+          <Card>
+            {updates.length > 0 && <h3 className="font-semibold mb-2">Sureholder Updates:</h3>}
+            <div className="flex overflow-x-scroll mb-8">
+              {updates.map(({ title, content, date, id }, i) => {
+                return (
+                  <Card key={i} className="border mr-8" style={{ minWidth: 200 }} title={title}>
+                    <p>{content}</p>
+                    <p className="text-xs">{moment(date).format(MOMENT_FORMAT)}</p>
+                    {viewingMode.id === ADMIN && (
+                      <button onClick={() => { delUpdate({ variables: { id }}); window.location.reload() }} className={`mt-2 btn--${cm()}`}>Delete</button>
+                    )}
+                  </Card>
+                )
+              })}
+            </div>
+            <h1 className="text-4xl">{ticker}</h1>
+            <p>{companyName}</p>
+            <p className="italic text-xs my-4">{description}</p>
+            {website && <Link href={website}>Website</Link>}
+            <div className="flex mb-8">
+              <div className="w-1/2">
+                {followingStock ? (
+                  <button className={`btn--${cm()}--outlined my-4`} onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
+                ) : (
+                  <button className={`btn--${cm()} my-4`} onClick={handleFollow} disabled={disabled}>Follow</button>
                 )}
               </div>
-            )
-          })}
-        </div>
-        <h1 className="text-4xl">{ticker}</h1>
-        <p>{companyName}</p>
-        <p className="italic text-xs my-4">{description}</p>
-        {website && <Link href={website}>Website</Link>}
-        <div className="flex mb-8">
-          <div className="w-1/2">
-            {followingStock ? (
-              <button className="btn--outlined my-4" onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
-            ) : (
-              <button className="btn my-4" onClick={handleFollow} disabled={disabled}>Follow</button>
-            )}
-          </div>
-          <div className="w-1/2">
-            <p>Price: ${toMoney(market.price)}</p>
-            <p>High: ${toMoney(market.dayHigh)}</p>
-            <p>Low: ${toMoney(market.dayLow)}</p>
-            <p>Change: {Number(market.change).toFixed(2)}%</p>
-          </div>
-        </div>
-        <section>
-          {filings.map(({ title, link, pubDate }, i) => {
-            return (
-              <div key={i} className="mb-4">
-                <p><Link href={link}>{title}</Link></p>
-                <p>{moment(pubDate).format(MOMENT_FORMAT)}</p>
+              <div className="w-1/2">
+                <p>Price: ${toMoney(market.price)}</p>
+                <p>High: ${toMoney(market.dayHigh)}</p>
+                <p>Low: ${toMoney(market.dayLow)}</p>
+                <p>Change: {Number(market.change).toFixed(2)}%</p>
               </div>
-            )
-          })}
-        </section>
+            </div>
+            <section>
+              {filings.map(({ title, link, pubDate }, i) => {
+                return (
+                  <div key={i} className="mb-4">
+                    <p><Link href={link}>{title}</Link></p>
+                    <p>{moment(pubDate).format(MOMENT_FORMAT)}</p>
+                  </div>
+                )
+              })}
+            </section>
+          </Card>
+        </div>
+
+        <div className="w-1/4 ml-2">
+          <Card title="Latest News:">
+            <ol>
+              {news.map(({ headline, datetime, url }, i) => {
+                return (
+                  <li key={i} className="mb-4 text-xs">
+                    <p><Link href={url}>{headline}</Link></p>
+                    <p className="text-xs">{moment(datetime).format(MOMENT_FORMAT)}</p>
+                  </li>
+                )
+              })}
+              {news.length === 0 && (
+                <p className="italic">No new updates</p>
+              )}
+            </ol>
+          </Card>
+        </div>
       </div>
-      <div className="w-1/4 ml-2">
-        <h3 className="text-lg">Latest News:</h3>
-        <ol>
-          {news.map(({ headline, datetime, url }, i) => {
-            return (
-              <li key={i} className="mb-4 text-xs">
-                <p><Link href={url}>{headline}</Link></p>
-                <p className="text-xs">{moment(datetime).format(MOMENT_FORMAT)}</p>
-              </li>
-            )
-          })}
-          {news.length === 0 && (
-            <p className="italic">No new updates</p>
-          )}
-        </ol>
-      </div>
-    </div>
+    </Frame>
   )
 }
 
 export default ({ match }) => {
   return (
-    <Frame>
-      <Stock ticker={match.params.ticker.toUpperCase()} />
-    </Frame>
+    <Stock ticker={match.params.ticker.toUpperCase()} />
   )
 }

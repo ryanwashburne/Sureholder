@@ -13,7 +13,7 @@ import {
   StockPage,
 } from './pages'
 
-import { AuthRoute, AuthProvider } from './utils'
+import { AuthRoute, AuthProvider, ColorModeProvider, useColorMode } from './utils'
 
 const ErrorPage = () => {
   return (
@@ -32,22 +32,35 @@ const PrivateRoute = ({ admin, ...props }) => {
   )
 }
 
+const BaseStyles = ({ children }) => {
+  const { cm } = useColorMode()
+  return (
+    <div className={cm('bg-gray-200 text-black', 'bg-gray-800 text-white')}>
+      {children}
+    </div>
+  )
+}
+
 export default () => {
   return (
     <IdentityContextProvider url={`https://sureholder.netlify.app`}>
       <AuthProvider>
-        <ApolloProvider client={client}>
-          <Router>
-            <Switch>
-              <PrivateRoute exact path={`/`} component={DashboardPage} />
-              <PrivateRoute exact path={`/s/:ticker`} component={StockPage} />
-              <PrivateRoute exact path={`/settings`} component={SettingsPage} />
-              <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
-              <Route exact path={`/auth`} component={AuthPage} />
-              <Route component={ErrorPage} />
-            </Switch>
-          </Router>
-        </ApolloProvider>
+        <ColorModeProvider>
+          <BaseStyles>
+            <ApolloProvider client={client}>
+              <Router>
+                <Switch>
+                  <PrivateRoute exact path={`/`} component={DashboardPage} />
+                  <PrivateRoute exact path={`/s/:ticker`} component={StockPage} />
+                  <PrivateRoute exact path={`/settings`} component={SettingsPage} />
+                  <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
+                  <Route exact path={`/auth`} component={AuthPage} />
+                  <Route component={ErrorPage} />
+                </Switch>
+              </Router>
+            </ApolloProvider>
+          </BaseStyles>
+        </ColorModeProvider>
       </AuthProvider>
     </IdentityContextProvider>
   )

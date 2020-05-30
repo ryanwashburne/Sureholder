@@ -10,13 +10,16 @@ import {
   Query,
   Link,
   Helmet,
+  Card,
 } from '../components'
 
 import {
   MOMENT_FORMAT,
+  useColorMode,
 } from '../utils'
 
 export default () => {
+  const { cm } = useColorMode()
   const identity = useIdentityContext()
   const { updateUser, user } = identity
 
@@ -35,12 +38,11 @@ export default () => {
   const { newsFeed } = data
   const { earningsFeed } = dataE
   return (
-    <Frame>
+    <Frame gutter>
       <Helmet>Dashboard</Helmet>
       <div className="flex">
         <div className="w-3/4 pr-2">
-          <div className="bg-white rounded p-4">
-            <h3 className="font-bold mb-8">Latest News Feed:</h3>
+          <Card title="Latest News Feed:">
             {newsFeed.map(({ ticker, news }, i) => {
               const { headline, datetime, summary, url } = news
               return (
@@ -55,18 +57,17 @@ export default () => {
               )
             })}
             {newsFeed.length === 0 && <p className="italic">No new updates.</p>}
-          </div>
+          </Card>
         </div>
         <div className="w-1/4 pl-2">
-          <div className="p-4 bg-white rounded mb-8">
-            <h1 className="text-2xl font-bold mb-2">My Investments:</h1>
+          <Card className="mb-8" title="My Investments:">
             {tickers.map((company, i) => {
               return (
-                <div key={i} className="bg-gray-200 rounded mb-2 p-2 border-gray-400 items-center border flex">
+                <div key={i} className={`rounded mb-2 p-2 border-gray-400 items-center border flex`}>
                   <div className="flex-1">
-                    <Link to={`/s/${company}`} className="link underline">{company}</Link>
+                    <Link to={`/s/${company}`} className="link">{company}</Link>
                   </div>
-                    <button className="link" onClick={async () => {
+                    <button className={`link--${cm()}`} onClick={async () => {
                       const temp = [...tickers]
                       const index = temp.indexOf(company)
                       if (index > -1) {
@@ -81,9 +82,8 @@ export default () => {
             {tickers.length === 0 && (
               <h3 className="text-lg italic">Go follow some companies</h3>
             )}
-          </div>
-          <div className="p-4 bg-white rounded">
-            <h1 className="text-2xl font-bold mb-2">Upcoming Earnings:</h1>
+          </Card>
+          <Card title="Upcoming Earnings:">
             {earningsFeed.map(({ ticker, earnings }, i) => {
               const { currentQuarterEstimate, currentQuarterEstimateDate, currentQuarterEstimateYear, earningsDate } = earnings.earningsChart
               return (
@@ -95,7 +95,7 @@ export default () => {
               )
             })}
             {earningsFeed.length === 0 && <p className="italic">No upcoming earnings.</p>}
-          </div>
+          </Card>
         </div>
       </div>
     </Frame>

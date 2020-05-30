@@ -8,10 +8,11 @@ import {
 } from '../components'
 
 import {
-  useAuth,
+  useAuth, useColorMode,
 } from '../utils'
 
 export default withRouter(({ history }) => {
+  const { cm } = useColorMode()
   const [modal, changeModal] = React.useState(false)
   const { isLoggedIn } = useAuth()
   if (isLoggedIn) {
@@ -22,7 +23,7 @@ export default withRouter(({ history }) => {
       <Helmet>Auth</Helmet>
       <h1 className="text-5xl font-bold mb-2">Sureholder</h1>
       <button
-        className="btn"
+        className={`btn--${cm()}`}
         onClick={() => changeModal(true)}
       >Sign In</button>
       <IdentityModal

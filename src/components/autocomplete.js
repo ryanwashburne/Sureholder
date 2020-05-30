@@ -48,7 +48,6 @@ export default withRouter(({ history, onData, onLoading }) => {
           onChange={e => changeSearch(e.target.value)}
           value={search}
         />
-        {/* <button className="ml-2 bg-gray-600 p-2 rounded text-gray-100">Go</button> */}
       </form>
       {search.length > 0 && !searchResponse && onLoading()}
       {onData(searchResponse, () => {

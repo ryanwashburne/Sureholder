@@ -7,72 +7,114 @@
 
 @tailwind components;
 
-.link {
+/* LIGHT */
+.link--light {
   color: theme('colors.primary.default');
 }
-.link:hover {
+.link--light:hover {
   color: theme('colors.primary.dark');
 }
-.link--secondary {
+.link--light--secondary {
   color: theme('colors.secondary.default');
 }
-.link--secondary:hover {
+.link--light--secondary:hover {
   color: theme('colors.secondary.dark');
+}
+
+/* DARK */
+.link--dark {
+  color: theme('colors.primary.light');
+}
+.link--dark:hover {
+  color: theme('colors.primary.default');
+}
+.link--dark--secondary {
+  color: theme('colors.secondary.light');
+}
+.link--dark--secondary:hover {
+  color: theme('colors.secondary.default');
 }
 
 .btn {
   @apply uppercase;
-  @apply bg-primary;
   @apply py-2;
   @apply px-3;
-  @apply text-white;
   @apply rounded;
   @apply shadow-lg;
 }
-.btn:hover {
+.btn--outlined {
+  @apply btn;
+  @apply bg-transparent;
+  @apply border-2;
+}
+
+/* LIGHT */
+.btn--light {
+  @apply btn;
+  @apply bg-primary;
+  @apply text-white;
+}
+.btn--light:hover {
   @apply bg-primary-dark;
 }
-
-.btn--outlined {
-  @apply uppercase;
-  @apply bg-transparent;
-  @apply py-2;
-  @apply px-3;
+.btn--light--secondary {
+  @apply btn;
+  @apply bg-secondary;
+  @apply text-white;
+}
+.btn--light--secondary:hover {
+  @apply bg-secondary-dark;
+}
+.btn--light--outlined {
+  @apply btn--outlined;
   @apply text-primary;
-  @apply rounded;
-  @apply border-2;
   @apply border-primary;
 }
-.btn--outlined:hover {
+.btn--light--outlined:hover {
   @apply bg-primary;
   @apply text-white;
 }
-
-.btn--secondary {
-  @apply uppercase;
-  @apply bg-secondary;
-  @apply py-2;
-  @apply px-3;
-  @apply text-white;
-  @apply rounded;
-  @apply shadow-lg;
-}
-.btn--secondary:hover {
-  @apply bg-secondary-dark;
-}
-
-.btn--outlined--secondary {
-  @apply uppercase;
-  @apply bg-transparent;
-  @apply py-2;
-  @apply px-3;
+.btn--light--outlined--secondary {
+  @apply btn--outlined;
   @apply text-secondary;
-  @apply rounded;
-  @apply border-2;
   @apply border-secondary;
 }
-.btn--outlined--secondary:hover {
+.btn--light--outlined--secondary:hover {
+  @apply bg-secondary-dark;
+  @apply border-secondary-dark;
+  @apply text-white;
+}
+
+/* DARK */
+.btn--dark {
+  @apply btn;
+  @apply bg-primary;
+  @apply text-white;
+}
+.btn--dark:hover {
+  @apply bg-primary-light;
+}
+.btn--dark--secondary {
+  @apply btn;
   @apply bg-secondary;
+  @apply text-white;
+}
+.btn--dark--secondary:hover {
+  @apply bg-secondary-light;
+}
+.btn--dark--outlined {
+  @apply btn--light--outlined;
+}
+.btn--dark--outlined:hover {
+  @apply bg-primary;
+  @apply text-white;
+}
+.btn--dark--outlined--secondary {
+  @apply btn--light--outlined--secondary;
+}
+.btn--dark--outlined--secondary:hover {
+  @apply bg-secondary-light;
+  @apply border-secondary-light;
   @apply text-white;
 }
 
