@@ -1,16 +1,15 @@
 import React from 'react'
-import { useIdentityContext } from 'react-netlify-identity'
 
 import {
   Frame,
   Helmet,
   Card,
 } from '../components'
-import { useColorMode } from '../utils'
+import { useColorMode, useAuth } from '../utils'
 
 export default () => {
   const { cm } = useColorMode()
-  const identity = useIdentityContext()
+  const identity = useAuth()
   const { updateUser } = identity
   return (
     <Frame>

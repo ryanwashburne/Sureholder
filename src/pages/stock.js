@@ -23,8 +23,8 @@ import {
 
 const Stock = ({ ticker }) => {
   const { cm } = useColorMode()
-  const { updateUser, user, viewingMode } = useAuth()
-  const following = user.user_metadata.follow || []
+  const { updateUser, user, viewingMode, isLoggedIn } = useAuth()
+  const following = user?.user_metadata?.follow || []
 
   const [followingStock, changeFollowStock] = React.useState(following.indexOf(ticker) > -1)
   const [disabled, changeDisabled] = React.useState(false)
@@ -75,7 +75,7 @@ const Stock = ({ ticker }) => {
   const { market, news, profile, filings, updates } = companyByTicker
   const { companyName, description, website } = profile
   return (
-    <Frame gutter>
+    <Frame>
       <div className="flex">
         <Helmet>{ticker}</Helmet>
         <div className="w-3/4">
@@ -100,13 +100,21 @@ const Stock = ({ ticker }) => {
             {website && <Link href={website}>Website</Link>}
             <div className="flex mb-8">
               <div className="w-1/2">
-                {followingStock ? (
-                  <button className={`btn--${cm()}--outlined my-4`} onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
+                {isLoggedIn ? (
+                  <div className="my-4">
+                    {followingStock ? (
+                      <button className={`btn--${cm()}--outlined`} onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
+                    ) : (
+                      <button className={`btn--${cm()}`} onClick={handleFollow} disabled={disabled}>Follow</button>
+                    )}
+                  </div>
                 ) : (
-                  <button className={`btn--${cm()} my-4`} onClick={handleFollow} disabled={disabled}>Follow</button>
+                  <div>
+                    <button className={`btn--${cm()}--outlined`} disabled>Sign In to Follow</button>
+                  </div>
                 )}
               </div>
-              <div className="w-1/2">
+              <div>
                 <p>Price: ${toMoney(market.price)}</p>
                 <p>High: ${toMoney(market.dayHigh)}</p>
                 <p>Low: ${toMoney(market.dayLow)}</p>

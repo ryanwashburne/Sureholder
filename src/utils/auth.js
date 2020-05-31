@@ -64,7 +64,7 @@ export const AuthRoute = ({ admin, children }) => {
   }
 
   if (!isLoggedIn || !user) {
-    return <Redirect to="/auth" />
+    return <Redirect to="/" />
   }
 
   if (admin && viewingMode.id !== ADMIN) {

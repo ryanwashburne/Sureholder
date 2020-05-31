@@ -6,27 +6,31 @@ import client from './apollo'
 import { ApolloProvider } from '@apollo/react-hooks'
 
 import {
-  AuthPage,
+  // AuthPage,
   DashboardPage,
   SettingsPage,
   AdminPage,
   StockPage,
 } from './pages'
 
+import {
+  Link,
+} from './components'
+
 import { AuthRoute, AuthProvider, ColorModeProvider, useColorMode } from './utils'
 
 const ErrorPage = () => {
   return (
-    <>
-      <h1>Error</h1>
-      <p>Page not found</p>
-    </>
+    <div className="min-h-screen flex justify-center items-center flex-col">
+      <h1 className="text-4xl uppercase font-bold">Error</h1>
+      <p>Page not found. <Link to="/">Go Home</Link></p>
+    </div>
   )
 }
 
-const PrivateRoute = ({ admin, ...props }) => {
+const AdminRoute = ({ ...props }) => {
   return (
-    <AuthRoute admin={admin}>
+    <AuthRoute admin>
       <Route {...props} />
     </AuthRoute>
   )
@@ -50,11 +54,11 @@ export default () => {
             <ApolloProvider client={client}>
               <Router>
                 <Switch>
-                  <PrivateRoute exact path={`/`} component={DashboardPage} />
-                  <PrivateRoute exact path={`/s/:ticker`} component={StockPage} />
-                  <PrivateRoute exact path={`/settings`} component={SettingsPage} />
-                  <PrivateRoute admin exact path={`/admin`} component={AdminPage} />
-                  <Route exact path={`/auth`} component={AuthPage} />
+                  <Route exact path={`/`} component={DashboardPage} />
+                  <Route exact path={`/s/:ticker`} component={StockPage} />
+                  <Route exact path={`/settings`} component={SettingsPage} />
+                  <AdminRoute admin exact path={`/admin`} component={AdminPage} />
+                  {/* <Route exact path={`/auth`} component={AuthPage} /> */}
                   <Route component={ErrorPage} />
                 </Switch>
               </Router>

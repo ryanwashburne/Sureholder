@@ -49,4 +49,5 @@ const server = new ApolloServer({
   }),
 })
 
-exports.handler = authorize(server.createHandler())
+// exports.handler = authorize(server.createHandler())
+exports.handler = server.createHandler()
