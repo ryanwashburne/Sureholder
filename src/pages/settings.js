@@ -1,31 +1,34 @@
-import React from 'react'
+import React from "react";
 
-import {
-  Frame,
-  Helmet,
-  Card,
-} from '../components'
-import { useColorMode, useAuth } from '../utils'
+import { Frame, Helmet, Card } from "../components";
+import { useColorMode, useAuth } from "../utils";
 
 export default () => {
-  const { cm } = useColorMode()
-  const identity = useAuth()
-  const { updateUser } = identity
+  const { cm } = useColorMode();
+  const identity = useAuth();
+  const { updateUser } = identity;
   return (
     <Frame>
       <Helmet>Settings</Helmet>
       <Card title="Settings:">
-        <button className={`btn--${cm()}--secondary`} onClick={() => {
-          identity.logoutUser()
-          window.location.reload()
-        }}>Log Out</button>
-        <button className={`hidden ml-2 btn--${cm()}--outlined--secondary`}
+        <button
+          className={`btn--${cm()}--secondary`}
           onClick={() => {
-            updateUser({ data: { follow: [] }})
+            identity.logoutUser();
+            window.location.reload();
           }}
-        >Erase User Data</button>
-        <button className={`ml-8 btn--${cm()}--outlined--secondary`}>Test</button>
+        >
+          Log Out
+        </button>
+        <button
+          className={`hidden ml-2 btn--${cm()}--outlined--secondary`}
+          onClick={() => {
+            updateUser({ data: { follow: [] } });
+          }}
+        >
+          Clear Following
+        </button>
       </Card>
     </Frame>
-  )
-}
+  );
+};
