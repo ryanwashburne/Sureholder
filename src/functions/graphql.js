@@ -1,9 +1,12 @@
 import { ApolloServer, gql } from 'apollo-server-lambda'
-import { authorize } from './utils'
+// import { authorize } from './utils'
 
 import { CompanyResolvers, CompanyType } from './resolvers/company'
 import { NewsFeedResolvers, NewsFeedType } from './resolvers/newsfeed'
-import { EarningsFeedResolvers, EarningsFeedType } from './resolvers/earningsfeed'
+import {
+  EarningsFeedResolvers,
+  EarningsFeedType,
+} from './resolvers/earningsfeed'
 
 import { tickerSearch } from './data'
 
@@ -32,7 +35,7 @@ const resolvers = {
     ...CompanyResolvers.Query,
     ...NewsFeedResolvers.Query,
     ...EarningsFeedResolvers.Query,
-    tickerSearch: async (_, { search }) => await tickerSearch(search)
+    tickerSearch: async (_, { search }) => await tickerSearch(search),
   },
   Mutation: {
     ...CompanyResolvers.Mutation,
@@ -49,5 +52,4 @@ const server = new ApolloServer({
   }),
 })
 
-// exports.handler = authorize(server.createHandler())
 exports.handler = server.createHandler()

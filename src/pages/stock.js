@@ -5,31 +5,23 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import * as QUERIES from '../graphql/queries'
 import * as MUTATIONS from '../graphql/mutations'
 
-import {
-  Frame,
-  Query,
-  Link,
-  Helmet,
-  Card,
-} from '../components'
+import { Frame, Query, Link, Helmet, Card } from '../components'
 
-import {
-  toMoney,
-  MOMENT_FORMAT,
-  useAuth,
-  ADMIN,
-  useColorMode,
-} from '../utils'
+import { toMoney, MOMENT_FORMAT, useAuth, ADMIN, useColorMode } from '../utils'
 
 const Stock = ({ ticker }) => {
   const { cm } = useColorMode()
   const { updateUser, user, viewingMode, isLoggedIn } = useAuth()
   const following = user?.user_metadata?.follow || []
 
-  const [followingStock, changeFollowStock] = React.useState(following.indexOf(ticker) > -1)
+  const [followingStock, changeFollowStock] = React.useState(
+    following.indexOf(ticker) > -1,
+  )
   const [disabled, changeDisabled] = React.useState(false)
 
-  const [delUpdate, { data: dataD, error: errorD }]= useMutation(MUTATIONS.DELETE_UPDATE)
+  const [delUpdate, { data: dataD, error: errorD }] = useMutation(
+    MUTATIONS.DELETE_UPDATE,
+  )
   if (dataD || errorD) {
     console.log(dataD, errorD)
   }
@@ -40,10 +32,10 @@ const Stock = ({ ticker }) => {
       const temp = [...following]
       const index = temp.indexOf(ticker)
       if (index === -1) {
-        await updateUser({ data: { follow: [...following, ticker] }})
+        await updateUser({ data: { follow: [...following, ticker] } })
         changeFollowStock(true)
       }
-    } catch(e) {
+    } catch (e) {
       console.error(e)
     }
     changeDisabled(false)
@@ -56,19 +48,18 @@ const Stock = ({ ticker }) => {
       const index = temp.indexOf(ticker)
       if (index > -1) {
         temp.splice(index, 1)
-        await updateUser({ data: { follow: [...temp] }})
+        await updateUser({ data: { follow: [...temp] } })
         changeFollowStock(false)
       }
-    } catch(e) {
+    } catch (e) {
       console.error(e)
     }
     changeDisabled(false)
   }
 
-  const { data, loading, error } = useQuery(
-    QUERIES.COMPANY_BY_TICKER,
-    { variables: { ticker, limit: 3 } }
-  )
+  const { data, loading, error } = useQuery(QUERIES.COMPANY_BY_TICKER, {
+    variables: { ticker, limit: 3 },
+  })
   if (error) return <Query.Error />
   if (loading) return <Query.Loading />
   const { companyByTicker } = data
@@ -80,15 +71,32 @@ const Stock = ({ ticker }) => {
         <Helmet>{ticker}</Helmet>
         <div className="w-3/4">
           <Card>
-            {updates.length > 0 && <h3 className="font-semibold mb-2">Sureholder Updates:</h3>}
+            {updates.length > 0 && (
+              <h3 className="font-semibold mb-2">Sureholder Updates:</h3>
+            )}
             <div className="flex overflow-x-scroll mb-8">
               {updates.map(({ title, content, date, id }, i) => {
                 return (
-                  <Card key={i} className="border mr-8" style={{ minWidth: 200 }} title={title}>
+                  <Card
+                    key={i}
+                    className="border mr-8"
+                    style={{ minWidth: 200 }}
+                    title={title}
+                  >
                     <p>{content}</p>
-                    <p className="text-xs">{moment(date).format(MOMENT_FORMAT)}</p>
+                    <p className="text-xs">
+                      {moment(date).format(MOMENT_FORMAT)}
+                    </p>
                     {viewingMode.id === ADMIN && (
-                      <button onClick={() => { delUpdate({ variables: { id }}); window.location.reload() }} className={`mt-2 btn--${cm()}`}>Delete</button>
+                      <button
+                        onClick={() => {
+                          delUpdate({ variables: { id } })
+                          window.location.reload()
+                        }}
+                        className={`mt-2 btn--${cm()}`}
+                      >
+                        Delete
+                      </button>
                     )}
                   </Card>
                 )
@@ -103,14 +111,28 @@ const Stock = ({ ticker }) => {
                 {isLoggedIn ? (
                   <div className="my-4">
                     {followingStock ? (
-                      <button className={`btn--${cm()}--outlined`} onClick={handleUnfollow} disabled={disabled}>Un-follow</button>
+                      <button
+                        className={`btn--${cm()}--outlined`}
+                        onClick={handleUnfollow}
+                        disabled={disabled}
+                      >
+                        Un-follow
+                      </button>
                     ) : (
-                      <button className={`btn--${cm()}`} onClick={handleFollow} disabled={disabled}>Follow</button>
+                      <button
+                        className={`btn--${cm()}`}
+                        onClick={handleFollow}
+                        disabled={disabled}
+                      >
+                        Follow
+                      </button>
                     )}
                   </div>
                 ) : (
                   <div>
-                    <button className={`btn--${cm()}--outlined`} disabled>Sign In to Follow</button>
+                    <button className={`btn--${cm()}--outlined`} disabled>
+                      Sign In to Follow
+                    </button>
                   </div>
                 )}
               </div>
@@ -125,7 +147,9 @@ const Stock = ({ ticker }) => {
               {filings.map(({ title, link, pubDate }, i) => {
                 return (
                   <div key={i} className="mb-4">
-                    <p><Link href={link}>{title}</Link></p>
+                    <p>
+                      <Link href={link}>{title}</Link>
+                    </p>
                     <p>{moment(pubDate).format(MOMENT_FORMAT)}</p>
                   </div>
                 )
@@ -140,14 +164,16 @@ const Stock = ({ ticker }) => {
               {news.map(({ headline, datetime, url }, i) => {
                 return (
                   <li key={i} className="mb-4 text-xs">
-                    <p><Link href={url}>{headline}</Link></p>
-                    <p className="text-xs">{moment(datetime).format(MOMENT_FORMAT)}</p>
+                    <p>
+                      <Link href={url}>{headline}</Link>
+                    </p>
+                    <p className="text-xs">
+                      {moment(datetime).format(MOMENT_FORMAT)}
+                    </p>
                   </li>
                 )
               })}
-              {news.length === 0 && (
-                <p className="italic">No new updates</p>
-              )}
+              {news.length === 0 && <p className="italic">No new updates</p>}
             </ol>
           </Card>
         </div>
@@ -157,7 +183,5 @@ const Stock = ({ ticker }) => {
 }
 
 export default ({ match }) => {
-  return (
-    <Stock ticker={match.params.ticker.toUpperCase()} />
-  )
+  return <Stock ticker={match.params.ticker.toUpperCase()} />
 }
