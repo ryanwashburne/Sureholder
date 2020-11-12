@@ -1,9 +1,9 @@
-import { gql } from 'apollo-boost'
+import { gql } from '@apollo/client'
 
 import * as FRAGMENTS from './fragments'
 
 export const ECHO = gql`
-  mutation ($input: String!) {
+  mutation($input: String!) {
     echo(input: $input)
   }
 `

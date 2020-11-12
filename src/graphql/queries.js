@@ -1,9 +1,9 @@
-import { gql } from 'apollo-boost'
+import { gql } from '@apollo/client'
 
 import * as FRAGMENTS from './fragments'
 
 export const COMPANY_BY_TICKER = gql`
-  query ($ticker: String!, $limit: Int) {
+  query($ticker: String!, $limit: Int) {
     companyByTicker(ticker: $ticker, limit: $limit) {
       ...companyFragment
     }
@@ -12,7 +12,7 @@ export const COMPANY_BY_TICKER = gql`
 `
 
 export const COMPANIES_ON_DASHBOARD = gql`
-  query ($tickers: [String!]) {
+  query($tickers: [String!]) {
     companiesOnDashboard(tickers: $tickers) {
       ...companyFragment
     }
@@ -21,7 +21,7 @@ export const COMPANIES_ON_DASHBOARD = gql`
 `
 
 export const NEWS_FEED = gql`
-  query ($tickers: [String!], $limit: Int) {
+  query($tickers: [String!], $limit: Int) {
     newsFeed(tickers: $tickers, limit: $limit) {
       ...newsFeedFragment
     }
@@ -30,7 +30,7 @@ export const NEWS_FEED = gql`
 `
 
 export const EARNINGS_FEED = gql`
-  query ($tickers: [String!]) {
+  query($tickers: [String!]) {
     earningsFeed(tickers: $tickers) {
       ...earningsFeedFragment
     }
@@ -39,7 +39,7 @@ export const EARNINGS_FEED = gql`
 `
 
 export const TICKER_SEARCH = gql`
-  query ($search: String!) {
+  query($search: String!) {
     tickerSearch(search: $search) {
       name
       ticker

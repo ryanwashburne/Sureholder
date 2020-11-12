@@ -1,4 +1,4 @@
-import { gql } from 'apollo-boost'
+import { gql } from '@apollo/client'
 
 export const NEWS_FRAGMENT = gql`
   fragment newsFragment on NewsType {
@@ -67,7 +67,7 @@ export const FILINGS_FRAGMENT = gql`
     title
     link
     pubDate
-    content    
+    content
   }
 `
 

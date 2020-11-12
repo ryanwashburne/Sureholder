@@ -3,7 +3,7 @@ import { IdentityContextProvider } from 'react-netlify-identity-widget'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 import client from './apollo'
-import { ApolloProvider } from '@apollo/react-hooks'
+import { ApolloProvider } from '@apollo/client'
 
 import { DashboardPage, SettingsPage, AdminPage, StockPage } from './pages'
 
@@ -54,16 +54,11 @@ export default () => {
               <Router>
                 <Switch>
                   <Route exact path={`/`} component={DashboardPage} />
+                  <AdminRoute exact path={`/admin`} component={AdminPage} />
                   <Route exact path={`/s/:ticker`} component={StockPage} />
                   <AuthRoute>
                     <Route exact path={`/settings`} component={SettingsPage} />
                   </AuthRoute>
-                  <AdminRoute
-                    admin
-                    exact
-                    path={`/admin`}
-                    component={AdminPage}
-                  />
                   <Route component={ErrorPage} />
                 </Switch>
               </Router>

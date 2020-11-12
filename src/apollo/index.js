@@ -1,25 +1,29 @@
-import ApolloClient from 'apollo-boost'
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
 
-function getToken() {
-  let accessToken
-  try {
-    accessToken = JSON.parse(localStorage.getItem('gotrue.user')).token
-      .access_token
-  } catch (e) {
-    console.error(e)
-  }
-  return accessToken ? `Bearer ${accessToken}` : ''
-}
-
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: '/.netlify/functions/graphql',
-  request: (operation) => {
-    operation.setContext({
-      headers: {
-        Authorization: getToken(),
-      },
-    })
-  },
 })
 
-export default client
+function getToken() {
+  try {
+    return JSON.parse(localStorage.getItem('gotrue.user')).token.access_token
+  } catch (e) {
+    return null
+  }
+}
+
+const authLink = setContext(async (_, { headers }) => {
+  const token = getToken()
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  }
+})
+
+export default new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
+})

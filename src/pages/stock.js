@@ -1,11 +1,19 @@
 import React from 'react'
 import moment from 'moment'
 
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 import * as QUERIES from '../graphql/queries'
 import * as MUTATIONS from '../graphql/mutations'
 
-import { Frame, Query, Link, Helmet, Card } from '../components'
+import {
+  Frame,
+  Query,
+  Link,
+  Helmet,
+  Card,
+  Earnings,
+  Newsfeed,
+} from '../components'
 
 import { toMoney, MOMENT_FORMAT, useAuth, ADMIN, useColorMode } from '../utils'
 
@@ -60,17 +68,23 @@ const Stock = ({ ticker }) => {
   const { data, loading, error } = useQuery(QUERIES.COMPANY_BY_TICKER, {
     variables: { ticker, limit: 3 },
   })
-  if (error) return <Query.Error />
-  if (loading) return <Query.Loading />
+  const {
+    data: dataE,
+    error: errorE,
+    loading: loadingE,
+  } = useQuery(QUERIES.EARNINGS_FEED, { variables: { tickers: [ticker] } })
+  if (error || errorE) return <Query.Error />
+  if (loading || loadingE) return <Query.Loading />
   const { companyByTicker } = data
+  const { earningsFeed } = dataE
   const { market, news, profile, filings, updates } = companyByTicker
   const { companyName, description, website } = profile
   return (
     <Frame>
       <div className="flex">
         <Helmet>{ticker}</Helmet>
-        <div className="w-3/4">
-          <Card>
+        <div className="w-3/4 pr-2">
+          <Card className="mb-4">
             {updates.length > 0 && (
               <h3 className="font-semibold mb-2">Sureholder Updates:</h3>
             )}
@@ -143,39 +157,24 @@ const Stock = ({ ticker }) => {
                 <p>Change: {Number(market.change).toFixed(2)}%</p>
               </div>
             </div>
-            <section>
-              {filings.map(({ title, link, pubDate }, i) => {
-                return (
-                  <div key={i} className="mb-4">
-                    <p>
-                      <Link href={link}>{title}</Link>
-                    </p>
-                    <p>{moment(pubDate).format(MOMENT_FORMAT)}</p>
-                  </div>
-                )
-              })}
-            </section>
           </Card>
+          <Newsfeed newsFeed={news.map((news) => ({ news, ticker }))} />
         </div>
 
-        <div className="w-1/4 ml-2">
-          <Card title="Latest News:">
-            <ol>
-              {news.map(({ headline, datetime, url }, i) => {
-                return (
-                  <li key={i} className="mb-4 text-xs">
-                    <p>
-                      <Link href={url}>{headline}</Link>
-                    </p>
-                    <p className="text-xs">
-                      {moment(datetime).format(MOMENT_FORMAT)}
-                    </p>
-                  </li>
-                )
-              })}
-              {news.length === 0 && <p className="italic">No new updates</p>}
-            </ol>
+        <div className="w-1/4 pl-2">
+          <Card title="SEC Reports:" className="mb-8">
+            {filings.map(({ title, link, pubDate }, i) => {
+              return (
+                <div key={i} className="mb-4 text-xs">
+                  <p>
+                    <Link href={link}>{title}</Link>
+                  </p>
+                  <p>{moment(pubDate).format(MOMENT_FORMAT)}</p>
+                </div>
+              )
+            })}
           </Card>
+          <Earnings earningsFeed={earningsFeed} />
         </div>
       </div>
     </Frame>

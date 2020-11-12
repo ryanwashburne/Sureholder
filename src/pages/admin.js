@@ -1,22 +1,17 @@
 import React from 'react'
 
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import * as MUTATIONS from '../graphql/mutations'
 
 import moment from 'moment'
 import { Formik, Form, Field } from 'formik'
 
-import {
-  Frame,
-  Input,
-  Card,
-  Helmet,
-} from '../components'
+import { Frame, Input, Card, Helmet } from '../components'
 import { ADD_UPDATE_SCHEMA, useColorMode } from '../utils'
 
 export default () => {
   const { cm } = useColorMode()
-  const [addUpdate, { loading }]= useMutation(MUTATIONS.ADD_UPDATE)
+  const [addUpdate, { loading }] = useMutation(MUTATIONS.ADD_UPDATE)
   return (
     <Frame>
       <Helmet>Admin</Helmet>
@@ -39,8 +34,8 @@ export default () => {
                   date,
                   url,
                   ticker: ticker.toUpperCase(),
-                }
-              }
+                },
+              },
             })
             alert('Added update.')
             window.location.reload()
@@ -50,12 +45,47 @@ export default () => {
         >
           {({ errors }) => (
             <Form>
-              <Field name="ticker" as={Input} label="Stock Ticker" error={errors.ticker} wrapperClassName="mb-3" />
-              <Field name="title" as={Input} label="Title" error={errors.title} wrapperClassName="mb-3" />
-              <Field name="content" as={Input} textArea label="Content" error={errors.content} wrapperClassName="mb-3" />
-              <Field name="date" as={Input} label="Date" error={errors.date} wrapperClassName="mb-3" />
-              <Field name="url" as={Input} label="URL" error={errors.url} wrapperClassName="mb-3" />
-              <button type="submit" disabled={loading} className={`mt-2 btn--${cm()}`}>
+              <Field
+                name="ticker"
+                as={Input}
+                label="Stock Ticker"
+                error={errors.ticker}
+                wrapperClassName="mb-3"
+              />
+              <Field
+                name="title"
+                as={Input}
+                label="Title"
+                error={errors.title}
+                wrapperClassName="mb-3"
+              />
+              <Field
+                name="content"
+                as={Input}
+                textArea
+                label="Content"
+                error={errors.content}
+                wrapperClassName="mb-3"
+              />
+              <Field
+                name="date"
+                as={Input}
+                label="Date"
+                error={errors.date}
+                wrapperClassName="mb-3"
+              />
+              <Field
+                name="url"
+                as={Input}
+                label="URL"
+                error={errors.url}
+                wrapperClassName="mb-3"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className={`mt-2 btn--${cm()}`}
+              >
                 Submit
               </button>
             </Form>

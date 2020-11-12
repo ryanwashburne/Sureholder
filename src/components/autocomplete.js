@@ -1,52 +1,52 @@
-import React from "react";
-import { withRouter } from "react-router-dom";
+import React from 'react'
+import { withRouter } from 'react-router-dom'
 
-import { useLazyQuery } from "@apollo/react-hooks";
-import * as QUERIES from "../graphql/queries";
+import { useLazyQuery } from '@apollo/client'
+import * as QUERIES from '../graphql/queries'
 
-import { useColorMode } from "../utils";
-import Input from "./input";
+import { useColorMode } from '../utils'
+import Input from './input'
 
 export default withRouter(({ history, onData, onLoading }) => {
-  const [search, changeSearch] = React.useState("");
-  const [searchResponse, changeResponse] = React.useState(null);
-  const { cm } = useColorMode();
+  const [search, changeSearch] = React.useState('')
+  const [searchResponse, changeResponse] = React.useState(null)
+  const { cm } = useColorMode()
 
   const [tickerSearch, { data: searchData }] = useLazyQuery(
-    QUERIES.TICKER_SEARCH
-  );
+    QUERIES.TICKER_SEARCH,
+  )
 
   React.useEffect(() => {
-    changeResponse(null);
+    changeResponse(null)
     if (search.length > 0) {
       const timer = window.setTimeout(async () => {
         await tickerSearch({
           variables: { search },
-        });
-        onLoading(false);
-      }, 800);
-      onLoading(true);
+        })
+        onLoading(false)
+      }, 800)
+      onLoading(true)
       return () => {
-        window.clearInterval(timer);
-      };
+        window.clearInterval(timer)
+      }
     }
-  }, [search, onLoading, tickerSearch]);
+  }, [search, onLoading, tickerSearch])
 
   React.useEffect(() => {
     if (searchData) {
-      changeResponse(searchData?.tickerSearch);
+      changeResponse(searchData?.tickerSearch)
     }
-  }, [searchData]);
+  }, [searchData])
 
   return (
     <div>
       <form
         autoComplete="off"
         onSubmit={(e) => {
-          e.preventDefault();
-          changeSearch("");
-          changeResponse(null);
-          history.push(`/s/${search.toUpperCase()}`);
+          e.preventDefault()
+          changeSearch('')
+          changeResponse(null)
+          history.push(`/s/${search.toUpperCase()}`)
         }}
       >
         <Input
@@ -58,16 +58,16 @@ export default withRouter(({ history, onData, onLoading }) => {
       </form>
       <div className="relative">
         <div
-          className={`absolute p-2 w-56 ${cm("bg-gray-100", "bg-gray-900")}`}
+          className={`absolute p-2 w-56 ${cm('bg-gray-100', 'bg-gray-900')}`}
           style={{ top: 2 }}
         >
           {search.length > 0 && !searchResponse && onLoading()}
           {onData(searchResponse, () => {
-            changeSearch("");
-            changeResponse(null);
+            changeSearch('')
+            changeResponse(null)
           })}
         </div>
       </div>
     </div>
-  );
-});
+  )
+})

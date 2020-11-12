@@ -61,7 +61,11 @@ const Header = ({ onLogin }) => {
             )}
           </Button>
         )}
-        {viewingMode.id === ADMIN && <Link to="/admin">Admin Dashboard</Link>}
+        {viewingMode.id === ADMIN && (
+          <Link to="/admin" className="ml-4">
+            Admin Dashboard
+          </Link>
+        )}
         <div className="flex-grow" />
 
         {isLoggedIn ? (
@@ -99,6 +103,7 @@ const Footer = () => {
   return (
     <div className="fixed bottom-0 h-16 flex items-center w-full px-4">
       <div className="flex-grow" />
+
       <Popper text="Color Mode" onClick={() => toggleColorMode()}>
         {isDark ? (
           <Icon name="contrast-2-line" />
