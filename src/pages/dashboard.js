@@ -11,6 +11,7 @@ import {
   Card,
   Earnings,
   Newsfeed,
+  PressFeed,
 } from '../components'
 
 import { useColorMode, useAuth } from '../utils'
@@ -56,13 +57,21 @@ export default () => {
     variables: { tickers, limit: 6 },
   })
   const {
+    data: dataPF,
+    error: errorPF,
+    loading: loadingPF,
+  } = useQuery(QUERIES.PRESS_FEED, {
+    variables: { tickers, limit: 6 },
+  })
+  const {
     data: dataE,
     error: errorE,
     loading: loadingE,
   } = useQuery(QUERIES.EARNINGS_FEED, { variables: { tickers } })
-  if (error || errorE) return <Query.Error />
-  if (loading || loadingE) return <Query.Loading />
+  if (error || errorPF || errorE) return <Query.Error />
+  if (loading || loadingPF || loadingE) return <Query.Loading />
   const { newsFeed } = data
+  const { pressFeed } = dataPF
   const { earningsFeed } = dataE
 
   return (
@@ -70,7 +79,8 @@ export default () => {
       <Helmet>Dashboard</Helmet>
       <div className="flex">
         <div className="w-3/4 pr-2">
-          <Newsfeed newsFeed={newsFeed} />
+          {/* <Newsfeed newsFeed={newsFeed} /> */}
+          <PressFeed pressFeed={pressFeed} />
         </div>
         <div className="w-1/4 pl-2">
           <Investments

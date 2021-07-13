@@ -12,6 +12,16 @@ export const NEWS_FRAGMENT = gql`
   }
 `
 
+export const PRESS_FRAGMENT = gql`
+  fragment pressFragment on PressType {
+    symbol
+    datetime
+    headline
+    description
+    url
+  }
+`
+
 export const PROFILE_FRAGMENT = gql`
   fragment profileFragment on ProfileType {
     website
@@ -81,6 +91,16 @@ export const NEWS_FEED_FRAGMENT = gql`
   ${NEWS_FRAGMENT}
 `
 
+export const PRESS_FEED_FRAGMENT = gql`
+  fragment pressFeedFragment on PressFeedType {
+    ticker
+    press {
+      ...pressFragment
+    }
+  }
+  ${PRESS_FRAGMENT}
+`
+
 export const EARNINGS_FEED_FRAGMENT = gql`
   fragment earningsFeedFragment on EarningsFeedType {
     ticker
@@ -121,6 +141,9 @@ export const COMPANY_FRAGMENT = gql`
     updates {
       ...updateFragment
     }
+    press {
+      ...pressFragment
+    }
   }
   ${MARKET_FRAGMENT}
   ${NEWS_FRAGMENT}
@@ -128,4 +151,5 @@ export const COMPANY_FRAGMENT = gql`
   ${PROFILE_FRAGMENT}
   ${FILINGS_FRAGMENT}
   ${UPDATE_FRAGMENT}
+  ${PRESS_FRAGMENT}
 `

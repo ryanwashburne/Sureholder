@@ -1,11 +1,12 @@
 import fetch from 'node-fetch'
 import { quote } from 'yahoo-finance/lib'
 
-import { IEX, FINPREP, edgar, google } from './external'
+import { IEX, FINPREP, FINNHUB, edgar, google } from './external'
 
 export const getProfile = async (ticker) => {
   const response = await quote(ticker, ['summaryProfile', 'price'])
-  const { website, longBusinessSummary, sector, industry } = response.summaryProfile
+  const { website, longBusinessSummary, sector, industry } =
+    response.summaryProfile
   const { shortName } = response.price
   return {
     website,
@@ -52,8 +53,16 @@ export const getNews = async (ticker, limit) => {
   }))
 }
 
+export const getPress = async (ticker) => {
+  const result = await fetch(FINNHUB(`/press-releases?symbol=${ticker}`))
+  const data = await result.json()
+  return data.majorDevelopment
+}
+
 export const tickerSearch = async (search) => {
-  const result = await fetch(FINPREP(`/search?query=${search}&limit=3&exchange=NASDAQ`))
+  const result = await fetch(
+    FINPREP(`/search?query=${search}&limit=3&exchange=NASDAQ`),
+  )
   const data = await result.json()
   return data.map(({ symbol, name }) => ({ ticker: symbol, name }))
 }

@@ -8,7 +8,7 @@ const CompanyTypes = gql`
     industry: String
     companyName: String
   }
-  
+
   type MarketType {
     price: Float
     changesPercentage: Float
@@ -16,7 +16,7 @@ const CompanyTypes = gql`
     dayLow: Float
     dayHigh: Float
     marketCap: Float
-    volume: Int,
+    volume: Int
   }
 
   type EarningsDate {
@@ -54,6 +54,14 @@ const CompanyTypes = gql`
     summary: String
     url: String
     ticker: String!
+  }
+
+  type PressType {
+    symbol: String!
+    datetime: String!
+    headline: String!
+    description: String!
+    url: String!
   }
 
   type FilingsType {

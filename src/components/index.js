@@ -9,3 +9,4 @@ export { default as NetlifyForm } from './netlifyform'
 // VIEWS
 export { default as Earnings } from './earnings'
 export { default as Newsfeed } from './newsfeed'
+export { default as PressFeed } from './pressfeed'

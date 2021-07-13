@@ -3,6 +3,7 @@ import { ApolloServer, gql } from 'apollo-server-lambda'
 
 import { CompanyResolvers, CompanyType } from './resolvers/company'
 import { NewsFeedResolvers, NewsFeedType } from './resolvers/newsfeed'
+import { PressFeedResolvers, PressFeedType } from './resolvers/press'
 import {
   EarningsFeedResolvers,
   EarningsFeedType,
@@ -15,6 +16,7 @@ import { tickerSearch } from './data'
 const typeDefs = gql`
   ${CompanyType}
   ${NewsFeedType}
+  ${PressFeedType}
   ${EarningsFeedType}
   type SearchType {
     name: String!
@@ -34,6 +36,7 @@ const resolvers = {
   Query: {
     ...CompanyResolvers.Query,
     ...NewsFeedResolvers.Query,
+    ...PressFeedResolvers.Query,
     ...EarningsFeedResolvers.Query,
     tickerSearch: async (_, { search }) => await tickerSearch(search),
   },
